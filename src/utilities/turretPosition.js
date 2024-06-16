@@ -14,7 +14,7 @@ export const calculateTurretEndpoints = (props) => {
   };
 };
 
-const degreesToRadians = (degrees) => {
+export const degreesToRadians = (degrees) => {
   const pi = Math.PI;
   return degrees * (pi / 180);
 };

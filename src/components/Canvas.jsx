@@ -1,6 +1,4 @@
 import { useRef, useEffect } from "react";
-import { createInitialTopography } from "../utilities/topography";
-import { generateTankPositions } from "../utilities/tankPosition";
 import { tankDimensions } from "../sprites/tanks";
 import { calculateTurretEndpoints } from "../utilities/turretPosition";
 
@@ -53,7 +51,8 @@ import { calculateTurretEndpoints } from "../utilities/turretPosition";
 // export default Canvas
 
 const Canvas = (props) => {
-  const { height = 600, width = 800 } = props;
+  const { canvasHeight, canvasWidth, gameState } = props;
+  const { topography, tanks, currentPlayer, lastShot } = gameState;
 
   const canvasRef = useRef(null);
 
@@ -66,7 +65,7 @@ const Canvas = (props) => {
 
     // Fill with gradient
     ctx.fillStyle = grd;
-    ctx.fillRect(0, 0, width, height);
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
     // yellow circle
     ctx.fillStyle = "#ffff11";
@@ -75,16 +74,17 @@ const Canvas = (props) => {
     ctx.fill();
 
     // topography
-    const initialTopography = createInitialTopography({
-      canvasHeight: height,
-      canvasWidth: width,
-      increments: 50,
-      maxVariationCoefficient: 0.05,
-      minHeightCoefficient: 0.2,
-      maxHeightCoefficient: 0.8,
-    });
+    // const initialTopography = createInitialTopography({
+    //   canvasHeight: height,
+    //   canvasWidth: width,
+    //   increments: 50,
+    //   maxVariationCoefficient: 0.05,
+    //   minHeightCoefficient: 0.2,
+    //   maxHeightCoefficient: 0.8,
+    // });
 
-    initialTopography.forEach((point, index) => {
+    ctx.beginPath();
+    topography.forEach((point, index) => {
       const positionX = point[0];
       const positionY = point[1];
       if (index === 0) {
@@ -93,46 +93,115 @@ const Canvas = (props) => {
         ctx.lineTo(positionX, positionY);
       }
     });
+    ctx.strokeStyle = "black";
     ctx.stroke();
+    ctx.closePath();
 
     // add tanks
-    const tankPositions = generateTankPositions({
-      canvasWidth: width,
-      topography: initialTopography,
-      numberOfTanks: 3,
-    });
-    console.log("tps", tankPositions);
+    // const tankPositions = generateTankPositions({
+    //   canvasWidth: width,
+    //   topography: initialTopography,
+    //   numberOfTanks: 3,
+    // });
 
-    tankPositions.forEach((tank) => {
-      const [tankX, tankY] = tank;
+    tanks.forEach((tank) => {
+      const { color, position, turretAngle } = tank;
+      const [tankX, tankY] = position;
       // ctx.fillStyle = "#000000";
       // ctx.beginPath();
       // ctx.arc(tankX, tankY, 10, 0, 2 * Math.PI);
       // ctx.fill();
 
-      console.log(
-        "fillRect props",
-        tankX,
-        tankY,
-        tankDimensions.height,
-        tankDimensions.width
-      );
-
-      ctx.fillStyle = "red";
+      ctx.fillStyle = color;
       ctx.fillRect(tankX, tankY, tankDimensions.width, tankDimensions.height);
 
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(
+        tankX + tankDimensions.width / 2,
+        tankY,
+        tankDimensions.height / 2,
+        0,
+        2 * Math.PI
+      );
+      ctx.fill();
+
       const { startingPoint, endingPoint } = calculateTurretEndpoints({
-        tankPosition: tank,
-        turretAngle: 180 + Math.random() * 180,
+        tankPosition: position,
+        turretAngle: turretAngle,
       });
-      console.log(startingPoint, endingPoint)
+      ctx.beginPath();
       ctx.moveTo(...startingPoint);
       ctx.lineTo(...endingPoint);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 3;
       ctx.stroke();
+      ctx.closePath();
     });
 
-    // add turrets
+    // current turn display
+
+    const currentTank = tanks[currentPlayer - 1];
+    const displayTankX = tankDimensions.width * 2;
+    const displayTankY = canvasHeight - tankDimensions.width * 2;
+
+    ctx.strokeStyle = currentTank.color;
+    ctx.beginPath();
+    ctx.arc(
+      displayTankX + tankDimensions.width / 2,
+      displayTankY,
+      tankDimensions.height * 2.5,
+      0,
+      2 * Math.PI
+    );
+    ctx.stroke();
+    ctx.closePath();
+
+    ctx.fillStyle = currentTank.color;
+    ctx.fillRect(
+      displayTankX,
+      displayTankY,
+      tankDimensions.width,
+      tankDimensions.height
+    );
+
+    ctx.fillStyle = currentTank.color;
+    ctx.beginPath();
+    ctx.arc(
+      displayTankX + tankDimensions.width / 2,
+      displayTankY,
+      tankDimensions.height / 2,
+      0,
+      2 * Math.PI
+    );
+    ctx.fill();
+    ctx.closePath();
+
+    const { startingPoint, endingPoint } = calculateTurretEndpoints({
+      tankPosition: [displayTankX, displayTankY],
+      turretAngle: -30,
+    });
+    ctx.beginPath();
+    ctx.moveTo(...startingPoint);
+    ctx.lineTo(...endingPoint);
+    ctx.strokeStyle = currentTank.color;
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    ctx.closePath();
+
+    // lastShot
+    ctx.beginPath();
+    if (lastShot.length > 0) {
+      ctx.moveTo(...lastShot[0]);
+      lastShot.forEach((point) => ctx.lineTo(...point));
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "grey";
+      ctx.stroke();
+      ctx.closePath();
+    }
   };
+
+  // parabola
 
   // useEffect(() => {
 
@@ -161,7 +230,7 @@ const Canvas = (props) => {
     draw(context, frameCount);
   }, [draw]);
 
-  return <canvas ref={canvasRef} {...props} height={height} width={width} />;
+  return <canvas ref={canvasRef} height={canvasHeight} width={canvasWidth} />;
 };
 
 export default Canvas;
