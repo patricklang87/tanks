@@ -20,10 +20,10 @@ export const getYAtTopOfTrajectory = (props) => {
 };
 
 export const getXAtTopOfTrajectory = (props) => {
-  const { initialVelocity, launchAngle, initialX } = props;
+  const { initialVelocity, launchAngle, initialX, projectileDirection } = props;
   const velocityX = initialVelocity * Math.cos(degreesToRadians(launchAngle));
-  const timeAtTop = getTimeAtTopOfTrajectory({initialVelocity, launchAngle})
-  return initialX + velocityX * timeAtTop;
+  const timeAtTop = getTimeAtTopOfTrajectory({ initialVelocity, launchAngle });
+  return initialX + projectileDirection * velocityX * timeAtTop;
 };
 
 // const getTimeAtBottomOfCanvas = (props) => {

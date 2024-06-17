@@ -128,6 +128,7 @@ export const launchProjectile = (props) => {
     initialX,
     initialVelocity,
     launchAngle,
+    projectileDirection
   });
   const pointAtTop = [xAtTop, yAtTop];
 
@@ -152,20 +153,16 @@ export const launchProjectile = (props) => {
       return point[0] > initialX;
     } else return point[0] < initialX;
   });
-  console.log("trimmedNewLastShot", trimmedNewLastShot);
 
   let trimmedNewLastShotWithEndingPoint = [endingPoint, ...trimmedNewLastShot];
   if (projectileDirection === -1)
     trimmedNewLastShotWithEndingPoint = [...trimmedNewLastShot, endingPoint];
 
   let newLastShotWithApex = trimmedNewLastShotWithEndingPoint;
-  console.log("pointAtTop", pointAtTop);
   if (pointAtTop[0] >= 0 || pointAtTop[0] <= environmentConstants.canvasWidth) {
     const xAtTopIndex = newLastShotWithApex.findIndex(
       (point) => point[0] >= pointAtTop[0]
     );
-    console.log("xAtTopIndex", xAtTopIndex);
-    console.log("nslaw1", newLastShotWithApex);
     if (xAtTopIndex !== -1) {
     newLastShotWithApex.splice(
       xAtTopIndex,
@@ -173,8 +170,6 @@ export const launchProjectile = (props) => {
       pointAtTop
     );
     }
-
-    console.log("newLastShotWithApex", newLastShotWithApex);
   }
   return newLastShotWithApex;
   // return trimmedNewLastShot

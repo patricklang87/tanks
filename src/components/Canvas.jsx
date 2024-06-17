@@ -1,7 +1,7 @@
 import { useRef, useEffect } from "react";
 import { tankDimensions } from "../sprites/tanks";
 import { calculateTurretEndpoints } from "../utilities/turretPosition";
-import { environmentConstants  } from "../gameplay/constants";
+import { environmentConstants } from "../gameplay/constants";
 
 /* eslint-disable react/prop-types */
 // const Canvas = props => {
@@ -54,7 +54,7 @@ import { environmentConstants  } from "../gameplay/constants";
 const Canvas = (props) => {
   const { gameState } = props;
   const { topography, tanks, currentPlayer, lastShot } = gameState;
-  const {canvasHeight, canvasWidth} = environmentConstants
+  const { canvasHeight, canvasWidth } = environmentConstants;
 
   const canvasRef = useRef(null);
 
