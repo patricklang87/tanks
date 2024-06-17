@@ -3,7 +3,13 @@ import { generateTankPositions } from "../utilities/tankPosition";
 import { initiateTank } from "../sprites/tanks";
 import { createInitialTopography } from "../utilities/topography";
 import { calculateTurretEndpoints } from "../utilities/turretPosition";
-import { getCurrentY } from "../utilities/calculateTrajectory";
+import {
+  getYAtX,
+  getYAtTopOfTrajectory,
+  getTimeAtTopOfTrajectory,
+  getXAtTopOfTrajectory,
+} from "../utilities/calculateTrajectory";
+import { environmentConstants } from "./constants";
 
 export const useInitiateGame = (props) => {
   const {
@@ -88,8 +94,6 @@ const getLaunchAngle = (props) => {
     turretAngleAgainstHorizon = turretAngle * -1;
   if (turretAngle < -90 && turretAngle >= -180)
     turretAngleAgainstHorizon = 180 + turretAngle;
-  console.log("ta", turretAngle)
-  console.log("ta against horizon", turretAngleAgainstHorizon);
   return turretAngleAgainstHorizon;
 };
 
@@ -105,31 +109,41 @@ export const launchProjectile = (props) => {
     turretAngle,
   });
   const [initialX, initialY] = endingPoint;
-  console.log("turretAngle for pd", turretAngle)
-  const projectileDirection = turretAngle  >= -90 ? 1 : -1;
+  const projectileDirection = turretAngle >= -90 ? 1 : -1;
   const initialVelocity = shotPower * projectileDirection;
-  // const rightIndex = topography.findIndex((point) => {
-  //   return point[0] >= initialX;
-  // });
-  // console.log(rightIndex)
-  // let leftIndex;
-  // if (initialX === topography[rightIndex][0]) {
-  //   leftIndex = rightIndex;
-  // } else leftIndex = rightIndex - 1;
-  // console.log(leftIndex);
-  //   const topographyArray =
-  //     projectileDirection > 0 ? topography : topography.reverse();
 
+  const timeAtTop = getTimeAtTopOfTrajectory({
+    initialVelocity,
+    launchAngle,
+  });
+
+  const yAtTop = getYAtTopOfTrajectory({
+    timeAtTop,
+    initialY,
+    initialVelocity,
+    launchAngle,
+  });
+
+  const xAtTop = getXAtTopOfTrajectory({
+    initialX,
+    initialVelocity,
+    launchAngle,
+  });
+  const pointAtTop = [xAtTop, yAtTop];
+
+  if (turretAngle === -90) {
+    return [endingPoint, pointAtTop, endingPoint];
+  }
   const newLastShot = topography.map((point) => {
     return [
       point[0],
-      getCurrentY({
+      getYAtX({
         initialY,
         initialX,
         launchAngle,
         initialVelocity,
         currentX: point[0],
-        accelerationGravity: -50,
+        projectileDirection,
       }),
     ];
   });
@@ -138,6 +152,30 @@ export const launchProjectile = (props) => {
       return point[0] > initialX;
     } else return point[0] < initialX;
   });
-  if (projectileDirection === -1) return [...trimmedNewLastShot, endingPoint];
-  return [endingPoint, ...trimmedNewLastShot]
+  console.log("trimmedNewLastShot", trimmedNewLastShot);
+
+  let trimmedNewLastShotWithEndingPoint = [endingPoint, ...trimmedNewLastShot];
+  if (projectileDirection === -1)
+    trimmedNewLastShotWithEndingPoint = [...trimmedNewLastShot, endingPoint];
+
+  let newLastShotWithApex = trimmedNewLastShotWithEndingPoint;
+  console.log("pointAtTop", pointAtTop);
+  if (pointAtTop[0] >= 0 || pointAtTop[0] <= environmentConstants.canvasWidth) {
+    const xAtTopIndex = newLastShotWithApex.findIndex(
+      (point) => point[0] >= pointAtTop[0]
+    );
+    console.log("xAtTopIndex", xAtTopIndex);
+    console.log("nslaw1", newLastShotWithApex);
+    if (xAtTopIndex !== -1) {
+    newLastShotWithApex.splice(
+      xAtTopIndex,
+      0,
+      pointAtTop
+    );
+    }
+
+    console.log("newLastShotWithApex", newLastShotWithApex);
+  }
+  return newLastShotWithApex;
+  // return trimmedNewLastShot
 };
