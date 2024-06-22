@@ -2,14 +2,15 @@ import Title from "./components/Title";
 import Canvas from "./components/Canvas";
 import TankControls from "./components/TankControls";
 import { useInitiateGame } from "./gameplay/gameControls";
+import { Shields } from "./components/Shields";
 
 function Index() {
   const canvasHeight = 500;
   const canvasWidth = 1200;
 
   const { gameState, setGameState } = useInitiateGame({
-    // numberOfPlayers: 3,
-    numberOfPlayers: 1,
+    numberOfPlayers: 3,
+    // numberOfPlayers: 1,
     canvasHeight,
     canvasWidth,
     increments: 50,
@@ -26,6 +27,7 @@ function Index() {
         canvasHeight={canvasHeight}
         canvasWidth={canvasWidth}
       />
+      <Shields gameState={gameState} />
       <TankControls setGameState={setGameState} gameState={gameState} />
     </>
   );

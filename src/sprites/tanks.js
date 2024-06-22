@@ -15,5 +15,7 @@ export const initiateTank = (props) => {
     shields: 100,
     position: tankPosition,
     color: tankColors[index],
+    fuel: 100,
+    selectedAction: "standardShot"
   };
 };

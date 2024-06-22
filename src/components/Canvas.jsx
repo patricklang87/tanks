@@ -201,6 +201,73 @@ const Canvas = (props) => {
       ctx.stroke();
       ctx.closePath();
     }
+
+    // 100 px markers
+    ctx.beginPath();
+    ctx.moveTo(100, 0);
+    ctx.lineTo(100, 800);
+    ctx.stroke();
+    ctx.closePath();
+
+    ctx.beginPath();
+    ctx.moveTo(200, 0);
+    ctx.lineTo(200, 800);
+    ctx.stroke();
+    ctx.closePath();
+
+    ctx.beginPath();
+    ctx.moveTo(300, 0);
+    ctx.lineTo(300, 800);
+    ctx.stroke();
+    ctx.closePath();
+
+    ctx.beginPath();
+    ctx.moveTo(400, 0);
+    ctx.lineTo(400, 800);
+    ctx.stroke();
+    ctx.closePath();
+
+    ctx.beginPath();
+    ctx.moveTo(500, 0);
+    ctx.lineTo(500, 800);
+    ctx.stroke();
+    ctx.closePath();
+
+    ctx.beginPath();
+    ctx.moveTo(600, 0);
+    ctx.lineTo(600, 800);
+    ctx.stroke();
+    ctx.closePath();
+
+    ctx.beginPath();
+    ctx.moveTo(700, 0);
+    ctx.lineTo(700, 800);
+    ctx.stroke();
+    ctx.closePath();
+
+    ctx.beginPath();
+    ctx.moveTo(800, 0);
+    ctx.lineTo(800, 800);
+    ctx.stroke();
+    ctx.closePath();
+
+    ctx.beginPath();
+    ctx.moveTo(900, 0);
+    ctx.lineTo(900, 800);
+    ctx.stroke();
+    ctx.closePath();
+
+    ctx.beginPath();
+    ctx.moveTo(1000, 0);
+    ctx.lineTo(1000, 800);
+    ctx.stroke();
+    ctx.closePath();
+
+    ctx.beginPath();
+    ctx.moveTo(1100, 0);
+    ctx.lineTo(1100, 800);
+    ctx.stroke();
+    ctx.closePath();
   };
 
   // parabola

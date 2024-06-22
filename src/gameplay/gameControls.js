@@ -10,6 +10,8 @@ import {
   getXAtTopOfTrajectory,
 } from "../utilities/calculateTrajectory";
 import { environmentConstants } from "./constants";
+import { tankDimensions } from "../sprites/tanks";
+import { actions } from "../sprites/actions";
 
 export const useInitiateGame = (props) => {
   const {
@@ -74,7 +76,7 @@ export const advancePlayerTurn = (props) => {
   const { gameState, setGameState } = props;
   const { numberOfPlayers, currentPlayer } = gameState;
 
-  const newLastShot = launchProjectile(props);
+  const {newLastShot, tanksNewGameState} = launchProjectile(props);
   if (numberOfPlayers === currentPlayer) {
     setGameState({ ...gameState, currentPlayer: 1, lastShot: newLastShot });
   } else {
@@ -83,6 +85,7 @@ export const advancePlayerTurn = (props) => {
       ...gameState,
       currentPlayer: nextPlayer,
       lastShot: newLastShot,
+      tanks: tanksNewGameState
     });
   }
 };
@@ -128,12 +131,43 @@ export const launchProjectile = (props) => {
     initialX,
     initialVelocity,
     launchAngle,
-    projectileDirection
+    projectileDirection,
   });
   const pointAtTop = [xAtTop, yAtTop];
 
+  const strikes = checkForStrikes({
+    initialX,
+    initialY,
+    initialVelocity,
+    launchAngle,
+    projectileDirection,
+    tanks,
+    currentPlayer,
+  });
+
+  const tanksNewGameState = tanks.map((tank, index) => {
+    if (strikes[index].hit) {
+      const strikeType = tanks[currentPlayer - 1].selectedAction;
+      const damage = actions[strikeType].damage;
+      return {
+        ...tank,
+        shields: tank.shields - damage,
+      };
+    }
+    return tank
+  });
+
   if (turretAngle === -90) {
-    return [endingPoint, pointAtTop, endingPoint];
+    checkForStrikes({
+      initialX,
+      initialY,
+      initialVelocity,
+      launchAngle,
+      projectileDirection,
+      tanks,
+      currentPlayer,
+    });
+    return {newLastShot: [endingPoint, pointAtTop, endingPoint], tanksNewGameState};
   }
   const newLastShot = topography.map((point) => {
     return [
@@ -164,13 +198,132 @@ export const launchProjectile = (props) => {
       (point) => point[0] >= pointAtTop[0]
     );
     if (xAtTopIndex !== -1) {
-    newLastShotWithApex.splice(
-      xAtTopIndex,
-      0,
-      pointAtTop
-    );
+      newLastShotWithApex.splice(xAtTopIndex, 0, pointAtTop);
     }
   }
-  return newLastShotWithApex;
-  // return trimmedNewLastShot
+
+
+  return {newLastShot: newLastShotWithApex, tanksNewGameState};
+};
+
+// const checkForStrikes = props => {
+//   { initialX, initialY, currentY, initialVelocity, launchAngle, tanks }
+//   const strikes = tanks.map((tank, index) => {
+//     const startingPoint = [tank.position[0] , tank.position[1]]
+//     const endingPoint = [tank.position[0] + tankDimensions.width, tank.position[1]]
+//     const xIntersectsAtTankY = getXAtY({initialX, initialY, currentY: tank.position[1], initialVelocity, launchAngle});
+//     const strikeObject = {tankIndex: index, hit: false, startingPoint, endingPoint, xIntersectsAtTankY}
+//     if (xIntersectsAtTankY.some(intersect => intersect >= startingPoint[0] && intersect <= endingPoint[0])) {
+//       strikeObject.hit = true
+//     }
+//     return strikeObject
+//   });
+
+//   return strikes;
+// }
+
+const checkForStrikes = (props) => {
+  const {
+    initialX,
+    initialY,
+    initialVelocity,
+    launchAngle,
+    tanks,
+    projectileDirection,
+    currentPlayer,
+  } = props;
+  const strikes = tanks.map((tank, index) => {
+    const tankStartX = tank.position[0];
+    const tankEndX = tank.position[0] + tankDimensions.width;
+    const tankTopY = tank.position[1];
+    const tankBottomY = tank.position[1] + tankDimensions.height;
+    const yIntersectTankStart = getYAtX({
+      initialX,
+      initialY,
+      currentX: tankStartX,
+      initialVelocity: initialVelocity,
+      launchAngle,
+      projectileDirection,
+    });
+    const yIntersectTankEnd = getYAtX({
+      initialX,
+      initialY,
+      currentX: tankEndX,
+      initialVelocity,
+      launchAngle,
+      projectileDirection,
+    });
+    const intersectsStartWall =
+      yIntersectTankStart >= tankTopY && yIntersectTankStart <= tankBottomY &&
+      currentPlayer !== index + 1;
+    const intersectsEndWall =
+      yIntersectTankEnd >= tankTopY && yIntersectTankEnd <= tankBottomY &&
+      currentPlayer !== index + 1;
+    const risesThroughTank =
+      yIntersectTankStart >= tankBottomY &&
+      yIntersectTankEnd <= tankTopY &&
+      currentPlayer !== index + 1;
+    const fallsThroughTank =
+      yIntersectTankStart <= tankTopY &&
+      yIntersectTankEnd >= tankBottomY &&
+      currentPlayer !== index + 1;
+
+    const timeAtTop = getTimeAtTopOfTrajectory({
+      initialVelocity,
+      launchAngle,
+    });
+    const xAtTop = getXAtTopOfTrajectory({
+      initialVelocity,
+      launchAngle,
+      initialX,
+      projectileDirection,
+    });
+    const yAtTop = getYAtTopOfTrajectory({
+      timeAtTop,
+      initialY,
+      initialVelocity,
+      launchAngle,
+    });
+    const strikesFromBelow =
+      yAtTop >= tankBottomY &&
+      yAtTop <= tankTopY &&
+      xAtTop >= tankStartX &&
+      xAtTop <= tankEndX;
+
+    const fallsThroughSelf =
+      xAtTop >= tankStartX &&
+      xAtTop <= tankEndX &&
+      yAtTop >= yAtTop &&
+      (yIntersectTankStart >= tankBottomY || yIntersectTankEnd >= tankBottomY);
+
+    const hit =
+      intersectsEndWall ||
+      intersectsStartWall ||
+      risesThroughTank ||
+      fallsThroughTank ||
+      strikesFromBelow ||
+      fallsThroughSelf;
+
+    return {
+      hit,
+      yIntersectTankStart,
+      yIntersectTankEnd,
+      tankStartX,
+      tankEndX,
+      tankTopY,
+      tankBottomY,
+      intersectsStartWall,
+      intersectsEndWall,
+      risesThroughTank,
+      fallsThroughTank,
+      yAtTop,
+      xAtTop,
+      strikesFromBelow,
+      fallsThroughSelf,
+    };
+  });
+
+  console.log("strikes", strikes);
+
+  return strikes;
 };
