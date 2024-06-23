@@ -1,8 +1,7 @@
 import Title from "./components/Title";
 import Canvas from "./components/Canvas";
-import TankControls from "./components/TankControls";
 import { useInitiateGame } from "./gameplay/gameControls";
-import { Shields } from "./components/Shields";
+import { PlayDashboard } from "./components/PlayDashboard";
 
 function Index() {
   const canvasHeight = 500;
@@ -19,6 +18,8 @@ function Index() {
     maxHeightCoefficient: 0.8,
   });
 
+  console.log(gameState)
+
   return (
     <>
       <Title />
@@ -27,8 +28,7 @@ function Index() {
         canvasHeight={canvasHeight}
         canvasWidth={canvasWidth}
       />
-      <Shields gameState={gameState} />
-      <TankControls setGameState={setGameState} gameState={gameState} />
+      <PlayDashboard setGameState={setGameState} gameState={gameState} />
     </>
   );
 }

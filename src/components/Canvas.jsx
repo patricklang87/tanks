@@ -63,7 +63,7 @@ const Canvas = (props) => {
 
     var grd = ctx.createRadialGradient(75, 50, 5, 90, 60, 100);
     grd.addColorStop(0, "red");
-    grd.addColorStop(1, "blue");
+    grd.addColorStop(1, "skyblue");
 
     // Fill with gradient
     ctx.fillStyle = grd;
@@ -95,8 +95,13 @@ const Canvas = (props) => {
         ctx.lineTo(positionX, positionY);
       }
     });
-    ctx.strokeStyle = "black";
+    ctx.lineTo(environmentConstants.canvasWidth, environmentConstants.canvasHeight)
+    ctx.lineTo(0, environmentConstants.canvasHeight)
+    ctx.strokeStyle = "darkgreen";
+    ctx.lineWidth = 8
     ctx.stroke();
+    ctx.fillStyle = "lightgreen";
+    ctx.fill()
     ctx.closePath();
 
     // add tanks
@@ -203,71 +208,71 @@ const Canvas = (props) => {
     }
 
     // 100 px markers
-    ctx.beginPath();
-    ctx.moveTo(100, 0);
-    ctx.lineTo(100, 800);
-    ctx.stroke();
-    ctx.closePath();
+    // ctx.beginPath();
+    // ctx.moveTo(100, 0);
+    // ctx.lineTo(100, 800);
+    // ctx.stroke();
+    // ctx.closePath();
 
-    ctx.beginPath();
-    ctx.moveTo(200, 0);
-    ctx.lineTo(200, 800);
-    ctx.stroke();
-    ctx.closePath();
+    // ctx.beginPath();
+    // ctx.moveTo(200, 0);
+    // ctx.lineTo(200, 800);
+    // ctx.stroke();
+    // ctx.closePath();
 
-    ctx.beginPath();
-    ctx.moveTo(300, 0);
-    ctx.lineTo(300, 800);
-    ctx.stroke();
-    ctx.closePath();
+    // ctx.beginPath();
+    // ctx.moveTo(300, 0);
+    // ctx.lineTo(300, 800);
+    // ctx.stroke();
+    // ctx.closePath();
 
-    ctx.beginPath();
-    ctx.moveTo(400, 0);
-    ctx.lineTo(400, 800);
-    ctx.stroke();
-    ctx.closePath();
+    // ctx.beginPath();
+    // ctx.moveTo(400, 0);
+    // ctx.lineTo(400, 800);
+    // ctx.stroke();
+    // ctx.closePath();
 
-    ctx.beginPath();
-    ctx.moveTo(500, 0);
-    ctx.lineTo(500, 800);
-    ctx.stroke();
-    ctx.closePath();
+    // ctx.beginPath();
+    // ctx.moveTo(500, 0);
+    // ctx.lineTo(500, 800);
+    // ctx.stroke();
+    // ctx.closePath();
 
-    ctx.beginPath();
-    ctx.moveTo(600, 0);
-    ctx.lineTo(600, 800);
-    ctx.stroke();
-    ctx.closePath();
+    // ctx.beginPath();
+    // ctx.moveTo(600, 0);
+    // ctx.lineTo(600, 800);
+    // ctx.stroke();
+    // ctx.closePath();
 
-    ctx.beginPath();
-    ctx.moveTo(700, 0);
-    ctx.lineTo(700, 800);
-    ctx.stroke();
-    ctx.closePath();
+    // ctx.beginPath();
+    // ctx.moveTo(700, 0);
+    // ctx.lineTo(700, 800);
+    // ctx.stroke();
+    // ctx.closePath();
 
-    ctx.beginPath();
-    ctx.moveTo(800, 0);
-    ctx.lineTo(800, 800);
-    ctx.stroke();
-    ctx.closePath();
+    // ctx.beginPath();
+    // ctx.moveTo(800, 0);
+    // ctx.lineTo(800, 800);
+    // ctx.stroke();
+    // ctx.closePath();
 
-    ctx.beginPath();
-    ctx.moveTo(900, 0);
-    ctx.lineTo(900, 800);
-    ctx.stroke();
-    ctx.closePath();
+    // ctx.beginPath();
+    // ctx.moveTo(900, 0);
+    // ctx.lineTo(900, 800);
+    // ctx.stroke();
+    // ctx.closePath();
 
-    ctx.beginPath();
-    ctx.moveTo(1000, 0);
-    ctx.lineTo(1000, 800);
-    ctx.stroke();
-    ctx.closePath();
+    // ctx.beginPath();
+    // ctx.moveTo(1000, 0);
+    // ctx.lineTo(1000, 800);
+    // ctx.stroke();
+    // ctx.closePath();
 
-    ctx.beginPath();
-    ctx.moveTo(1100, 0);
-    ctx.lineTo(1100, 800);
-    ctx.stroke();
-    ctx.closePath();
+    // ctx.beginPath();
+    // ctx.moveTo(1100, 0);
+    // ctx.lineTo(1100, 800);
+    // ctx.stroke();
+    // ctx.closePath();
   };
 
   // parabola

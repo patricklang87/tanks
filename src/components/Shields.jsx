@@ -1,21 +1,32 @@
 import React from "react";
+import ProgressBar from "react-bootstrap/ProgressBar";
 
-const ShieldDisplay = (props) => {
-  const {
-    tank: { shields, color },
-  } = props;
-  return <p style={{ color }}>Shields: {shields}</p>;
-};
-
-export const Shields = (props) => {
+const Shields = (props) => {
   const { gameState } = props;
   const { tanks } = gameState;
+  console.log("tanks", tanks);
 
   return (
-    <div style={{backgroundColor: "lightgrey"}}>
+    <div style={{ padding: "10px" }}>
       {tanks.map((tank, index) => (
-        <ShieldDisplay key={`$tank_shieds_${index}`} tank={tank} />
+        <div
+          key={`shields_${index}`}
+          className="row"
+          style={{ margin: "5px", radius: "10px", padding: "5px", backgroundColor: tank.color }}
+        >
+          <span className="col-4">{tank.shields}%</span>
+          <div className="col-8">
+            {" "}
+            <ProgressBar
+              animated
+              now={tank.shields}
+              style={{ color: tank.color }}
+            />
+          </div>
+        </div>
       ))}
     </div>
   );
 };
+
+export default Shields;
