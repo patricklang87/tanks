@@ -8,7 +8,7 @@ function Index() {
   const canvasWidth = 1200;
 
   const { gameState, setGameState } = useInitiateGame({
-    numberOfPlayers: 3,
+    numberOfPlayers: 4,
     // numberOfPlayers: 1,
     canvasHeight,
     canvasWidth,
@@ -17,8 +17,6 @@ function Index() {
     minHeightCoefficient: 0.2,
     maxHeightCoefficient: 0.8,
   });
-
-  console.log(gameState)
 
   return (
     <>

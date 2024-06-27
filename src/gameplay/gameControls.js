@@ -1,17 +1,22 @@
 import { useState } from "react";
 import { generateTankPositions } from "../utilities/tankPosition";
 import { initiateTank } from "../sprites/tanks";
-import { createInitialTopography } from "../utilities/topography";
+import {
+  createInitialTopography,
+  updateTopographyOnStrike,
+} from "../utilities/topography";
 import { calculateTurretEndpoints } from "../utilities/turretPosition";
 import {
   getYAtX,
   getYAtTopOfTrajectory,
   getTimeAtTopOfTrajectory,
   getXAtTopOfTrajectory,
+  createTrajectory,
 } from "../utilities/calculateTrajectory";
 import { environmentConstants } from "./constants";
 import { tankDimensions } from "../sprites/tanks";
 import { actions } from "../sprites/actions";
+import { getNewTankPosition } from "../utilities/tankPosition";
 
 export const useInitiateGame = (props) => {
   const {
@@ -72,20 +77,83 @@ export const setShotPower = (props) => {
   setGameState({ ...gameState, tanks: newTanks });
 };
 
+export const setDriveDistance = (props) => {
+  const { gameState, setGameState, value } = props;
+  const { currentPlayer, tanks } = gameState;
+  const currentTank = tanks[currentPlayer - 1];
+  const newCurrentTank = { ...currentTank, driveDistance: value };
+  const newTanks = [...tanks];
+  newTanks[currentPlayer - 1] = newCurrentTank;
+  setGameState({ ...gameState, tanks: newTanks });
+};
+
+export const setSelectedAction = (props) => {
+  const { gameState, setGameState, value } = props;
+  const { currentPlayer, tanks } = gameState;
+  const currentTank = tanks[currentPlayer - 1];
+  const newCurrentTank = { ...currentTank, selectedAction: value };
+  const newTanks = [...tanks];
+  newTanks[currentPlayer - 1] = newCurrentTank;
+  setGameState({ ...gameState, tanks: newTanks });
+};
+
 export const advancePlayerTurn = (props) => {
   const { gameState, setGameState } = props;
-  const { numberOfPlayers, currentPlayer } = gameState;
+  const { numberOfPlayers, currentPlayer, topography } = gameState;
 
-  const { newLastShot, tanksNewGameState } = launchProjectile(props);
+  const currentTank = gameState.tanks[currentPlayer - 1];
+  const selectedAction = currentTank.selectedAction;
+  let updatedLastShot = [];
+  let tanksUpdatedGameState = [...gameState.tanks];
+  let newTopography = topography;
+
+  if (selectedAction === "Standard Shot") {
+    const { newLastShot, tanksNewGameState, groundHit } =
+      launchProjectile(props);
+    updatedLastShot = newLastShot;
+    tanksUpdatedGameState = tanksNewGameState;
+    if (groundHit !== null) {
+      newTopography = updateTopographyOnStrike({ gameState, point: groundHit });
+    }
+  }
+
+  if (selectedAction === "Drive") {
+    const { position, driveDistance } = currentTank;
+    const newTankPosition = getNewTankPosition({
+      topography,
+      tankX: position[0],
+      distance: driveDistance,
+    });
+    const updatedTank = { ...currentTank, position: newTankPosition };
+    tanksUpdatedGameState[currentPlayer - 1] = updatedTank;
+  }
+
+  const nextPlayer = getNextPlayer({
+    currentPlayer,
+    numberOfPlayers,
+    tanksUpdatedGameState,
+  });
+  setGameState({
+    ...gameState,
+    currentPlayer: nextPlayer,
+    lastShot: updatedLastShot,
+    tanks: tanksUpdatedGameState,
+    topography: newTopography,
+  });
+};
+
+const getNextPlayer = (props) => {
+  const { currentPlayer, numberOfPlayers, tanksUpdatedGameState } = props;
   let nextPlayer;
   if (currentPlayer === numberOfPlayers) nextPlayer = 1;
-  else nextPlayer = currentPlayer + 1
-    setGameState({
-      ...gameState,
-      currentPlayer: nextPlayer,
-      lastShot: newLastShot,
-      tanks: tanksNewGameState,
-    });
+  else nextPlayer = currentPlayer + 1;
+  console.log(tanksUpdatedGameState[nextPlayer - 1].shields);
+  while (tanksUpdatedGameState[nextPlayer - 1].shields <= 0) {
+    if (nextPlayer === numberOfPlayers) nextPlayer = 1;
+    else nextPlayer++;
+  }
+  console.log("np", nextPlayer);
+  return nextPlayer;
 };
 
 const getLaunchAngle = (props) => {
@@ -133,21 +201,31 @@ export const launchProjectile = (props) => {
   });
   const pointAtTop = [xAtTop, yAtTop];
 
-  const strikes = checkForStrikes({
+  // const strikes = checkForStrikes({
+  //   initialX,
+  //   initialY,
+  //   initialVelocity,
+  //   launchAngle,
+  //   projectileDirection,
+  //   tanks,
+  //   currentPlayer,
+  // });
+
+  const {
+    trajectory: newTrajectory,
+    tanksHit,
+    groundHit,
+  } = createTrajectory({
     initialX,
     initialY,
     initialVelocity,
     launchAngle,
     projectileDirection,
-    tanks,
-    currentPlayer,
+    gameState,
   });
 
-  console.log({ strikes });
-
   const tanksNewGameState = tanks.map((tank, index) => {
-    if (strikes[index].hit) {
-      console.log(index, strikes[index].hit);
+    if (tanksHit.includes(index)) {
       const strikeType = tanks[currentPlayer - 1].selectedAction;
       const damage = actions[strikeType].damage;
       return {
@@ -158,12 +236,12 @@ export const launchProjectile = (props) => {
     return tank;
   });
 
-  console.log("tNGS3", tanksNewGameState);
-
   if (turretAngle === -90) {
     return {
-      newLastShot: [endingPoint, pointAtTop, endingPoint],
+      newLastShot: newTrajectory,
+      // newLastShot: [endingPoint, pointAtTop, endingPoint],
       tanksNewGameState,
+      groundHit,
     };
   }
   const newLastShot = topography.map((point) => {
@@ -199,7 +277,8 @@ export const launchProjectile = (props) => {
     }
   }
 
-  return { newLastShot: newLastShotWithApex, tanksNewGameState };
+  return { newLastShot: newTrajectory, tanksNewGameState, groundHit };
+  // return { newLastShot: newLastShotWithApex, tanksNewGameState };
 };
 
 // const checkForStrikes = props => {
@@ -302,6 +381,22 @@ const checkForStrikes = (props) => {
       strikesFromBelow ||
       fallsThroughSelf;
 
+    //   let lastShotIntersection = null;
+    // if (hit) {
+    //   if (intersectsStartWall) {
+    //     lastShotIntersection = [tankStartX, yIntersectTankStart]
+    //   } else if (intersectsEndWall) {
+    //     lastShotIntersection = [tankEndX, yIntersectTankEnd]
+    //   } else if (risesThroughTank) {
+    //     lastShotIntersection = [getXAtY(), tankTopY]
+    //   } else if (fallsThroughTank) {
+    //     lastShotIntersection = tankTopY
+    //   } else if (strikesFromBelow) {
+    //     lastShotIntersection = tankBottomY
+    //   }
+    //   else lastShotIntersection = tankTop
+    // }
+
     return {
       hit,
       yIntersectTankStart,
@@ -318,10 +413,9 @@ const checkForStrikes = (props) => {
       xAtTop,
       strikesFromBelow,
       fallsThroughSelf,
+      // lastShotIntersection,
     };
   });
-
-  console.log("strikes", strikes);
 
   return strikes;
 };

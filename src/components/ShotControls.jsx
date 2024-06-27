@@ -6,7 +6,7 @@ import {
   setShotPower,
 } from "../gameplay/gameControls";
 
-const TankControls = (props) => {
+const ShotControls = (props) => {
   const { gameState, setGameState } = props;
   const turretAngleInputId = useId();
   const shotPowerIndexId = useId();
@@ -94,4 +94,4 @@ const TankControls = (props) => {
   );
 };
 
-export default TankControls;
+export default ShotControls;

@@ -1,10 +1,17 @@
 import React from "react";
 import Shields from "./Shields";
-import TankControls from "./TankControls";
-import { advancePlayerTurn } from "../gameplay/gameControls";
+import ShotControls from "./ShotControls";
+import DriveControls from "./DriveControls";
+import { advancePlayerTurn, setSelectedAction } from "../gameplay/gameControls";
 
 export const PlayDashboard = (props) => {
   const { gameState, setGameState } = props;
+
+  const { currentPlayer, tanks } = gameState;
+  const currentTank = tanks[currentPlayer - 1];
+  const selectedAction = currentTank.selectedAction;
+  const availableActions = currentTank.availableActions;
+
   return (
     <div style={{ backgroundColor: "lightgrey", padding: "10px" }}>
       <div className="row">
@@ -12,12 +19,31 @@ export const PlayDashboard = (props) => {
           <Shields gameState={gameState} />
         </div>
         <div className="col-7">
-          <TankControls gameState={gameState} setGameState={setGameState} />
+          <select onChange={e => setSelectedAction({
+                gameState,
+                setGameState,
+                value: e.target.value,
+              })} className="form-select" aria-label="Select action">
+            {availableActions.map((action) => (
+              <option key={action} value={action}>
+                {action}
+              </option>
+            ))}
+          </select>
+          {selectedAction === "Standard Shot" && (
+            <ShotControls gameState={gameState} setGameState={setGameState} />
+          )}
+          {selectedAction === "Drive" && (
+            <DriveControls gameState={gameState} setGameState={setGameState} />
+          )}
         </div>
+
         <div className="col-1">
-        <button onClick={() => advancePlayerTurn({ gameState, setGameState })}>
-        Shoot!
-      </button>
+          <button
+            onClick={() => advancePlayerTurn({ gameState, setGameState })}
+          >
+            {selectedAction === "Drive" ? "Drive!" : "Fire!"}
+          </button>
         </div>
       </div>
     </div>

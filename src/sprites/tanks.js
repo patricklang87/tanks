@@ -12,10 +12,13 @@ export const initiateTank = (props) => {
   return {
     turretAngle: -90,
     shotPower: 50,
+    driveDistance: 0,
     shields: 100,
     position: tankPosition,
     color: tankColors[index],
     fuel: 100,
-    selectedAction: "standardShot"
+    selectedAction: "Standard Shot",
+    availableActions: ["Standard Shot", "Drive"
+    ],
   };
 };

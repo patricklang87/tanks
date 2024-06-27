@@ -35,3 +35,10 @@ export const getTankY = (props) => {
   const yIntercept = tankLeftPoint[1] - gradient * tankLeftPoint[0];
   return gradient * tankX + yIntercept;
 };
+
+export const getNewTankPosition = (props) => {
+  const { topography, tankX, distance } = props;
+  const newTankX = Number(tankX) + Number(distance);
+  const newTankY = getTankY({topography, tankX: newTankX});
+  return centerTank({uncenteredPoint: [newTankX, newTankY]});
+}

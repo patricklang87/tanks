@@ -1,3 +1,6 @@
+import { getYForXInLine } from "./calculateTrajectory";
+import { getCurrentTank, getCurrentShotDamage} from "./data";
+
 const calculateStartingHeight = (props) => {
   const { canvasHeight, minHeightCoefficient, maxHeightCoefficient } = props;
   const maxHeight = canvasHeight * maxHeightCoefficient;
@@ -43,3 +46,26 @@ export const createInitialTopography = (props) => {
 
   return points.map(point => [point[0], canvasHeight - point[1]]);
 };
+
+export const updateTopographyOnStrike = props => {
+  const {gameState, point} = props;
+  const { topography } = gameState;
+  const damage = getCurrentShotDamage(gameState);
+  const damageRadius = damage;
+  const leftX = point[0] - damageRadius;
+  const rightX = point[0] + damageRadius;
+  const leftCraterRightIndex = topography.findIndex((segment) => segment[0] >= leftX);
+    const leftCraterLeftIndex = leftCraterRightIndex - 1;
+  const leftCrater = [leftX, getYForXInLine({point1: topography[leftCraterLeftIndex], point2: topography[leftCraterRightIndex], currentX: leftX})]
+  
+  const rightCraterRightIndex = topography.findIndex((segment) => segment[0] >= rightX);
+  const rightCraterLeftIndex = rightCraterRightIndex -1;
+  const rightCrater = [rightX, getYForXInLine({point1: topography[rightCraterLeftIndex], point2: topography[rightCraterRightIndex], currentX: rightX})]
+  const leftTopography = topography.slice(0, leftCraterLeftIndex + 1);
+  const rightTopography = topography. slice(rightCraterRightIndex, topography.length)
+
+
+  const craterBase = [point[0], point[1] + damage]
+  return [...leftTopography, leftCrater, craterBase, rightCrater, ...rightTopography]
+
+}

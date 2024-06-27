@@ -1,3 +1,4 @@
 export const actions = {
-    standardShot: { damage: 10 }
+    ["Standard Shot"]: { damage: 10 },
+    ["Drive"]: { fuel: 1 }
 }
