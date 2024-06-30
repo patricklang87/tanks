@@ -1,15 +1,13 @@
-import './App.css'
-import Hello from './components/Hello'
-import Canvas from './components/Canvas'
+import "./App.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Index from "./Index";
 
 function App() {
-
   return (
     <>
-      <Hello />
-      <Canvas />
+      <Index />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
