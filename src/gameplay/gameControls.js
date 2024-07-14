@@ -48,7 +48,9 @@ export const useInitiateGame = (props) => {
     numberOfPlayers,
     currentPlayer: 1,
     topography: initialTopography,
+    updatedTopography: initialTopography,
     lastShot: [],
+    lastShotAnimationCompleted: false,
     tanks: tankPositions.map((tankPosition, index) =>
       initiateTank({ tankPosition, index })
     ),
@@ -137,8 +139,9 @@ export const advancePlayerTurn = (props) => {
     ...gameState,
     currentPlayer: nextPlayer,
     lastShot: updatedLastShot,
+    lastShotAnimationCompleted: false,
     tanks: tanksUpdatedGameState,
-    topography: newTopography,
+    updatedTopography: newTopography,
   });
 };
 

@@ -23,6 +23,7 @@ function Index() {
       <Title />
       <Canvas
         gameState={gameState}
+        setGameState={setGameState}
         canvasHeight={canvasHeight}
         canvasWidth={canvasWidth}
       />

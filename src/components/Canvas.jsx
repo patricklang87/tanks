@@ -52,8 +52,8 @@ import { environmentConstants } from "../gameplay/constants";
 // export default Canvas
 
 const Canvas = (props) => {
-  const { gameState } = props;
-  const { topography, tanks, currentPlayer, lastShot } = gameState;
+  const { gameState, setGameState } = props;
+  const { topography, tanks, currentPlayer, lastShot, lastShotAnimationCompleted } = gameState;
   const { canvasHeight, canvasWidth } = environmentConstants;
 
   const canvasRef = useRef(null);
@@ -95,13 +95,16 @@ const Canvas = (props) => {
         ctx.lineTo(positionX, positionY);
       }
     });
-    ctx.lineTo(environmentConstants.canvasWidth, environmentConstants.canvasHeight)
-    ctx.lineTo(0, environmentConstants.canvasHeight)
+    ctx.lineTo(
+      environmentConstants.canvasWidth,
+      environmentConstants.canvasHeight
+    );
+    ctx.lineTo(0, environmentConstants.canvasHeight);
     ctx.strokeStyle = "darkgreen";
-    ctx.lineWidth = 8
+    ctx.lineWidth = 8;
     ctx.stroke();
     ctx.fillStyle = "lightgreen";
-    ctx.fill()
+    ctx.fill();
     ctx.closePath();
 
     // add tanks
@@ -196,17 +199,6 @@ const Canvas = (props) => {
     ctx.stroke();
     ctx.closePath();
 
-    // lastShot
-    ctx.beginPath();
-    if (lastShot.length > 0) {
-      ctx.moveTo(...lastShot[0]);
-      lastShot.forEach((point) => ctx.lineTo(...point));
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = "grey";
-      ctx.stroke();
-      ctx.closePath();
-    }
-
     // 100 px markers
     // ctx.beginPath();
     // ctx.moveTo(100, 0);
@@ -273,36 +265,72 @@ const Canvas = (props) => {
     // ctx.lineTo(1100, 800);
     // ctx.stroke();
     // ctx.closePath();
+
+    drawProjectile(ctx, frameCount);
   };
 
   // parabola
 
-  // useEffect(() => {
+  const drawProjectile = (context, frameCount) => {
+    if (!lastShotAnimationCompleted && lastShot.length > 0) {
+      context.fillStyle = "#000000";
+      context.beginPath();
+      console.log(lastShot)
+      context.arc(
+        lastShot[frameCount][0],
+        lastShot[frameCount][1],
+        2,
+        0,
+        2 * Math.PI
+      );
+      context.fill();
+    }
+    if (frameCount === lastShot.length - 1) {
+      console.log("frameCount", lastShot.length - 1)
+      const updatedTopography = gameState.updatedTopography;
+      setGameState({...gameState, topography: updatedTopography, lastShotAnimationCompleted: true})
+    }
+  };
 
-  //   const canvas = canvasRef.current;
-  //   const context = canvas.getContext('2d');
-  //   let frameCount = 0;
-  //   let animationFrameId;
-
-  //   //Our draw came here
-  //   const render = () => {
-  //     frameCount++;
-  //     draw(context, frameCount);
-  //     animationFrameId = window.requestAnimationFrame(render);
-  //   }
-  //   render()
-
-  //   return () => {
-  //     window.cancelAnimationFrame(animationFrameId)
-  //   }
-  // }, [draw])
+  // const drawTrajectory = (ctx) => {
+  //       // lastShot
+  //       ctx.beginPath();
+  //       if (lastShot.length > 0) {
+  //         ctx.moveTo(...lastShot[0]);
+  //         lastShot.forEach((point) => ctx.lineTo(...point));
+  //         ctx.lineWidth = 2;
+  //         ctx.strokeStyle = "grey";
+  //         ctx.stroke();
+  //         ctx.closePath();
+  //       }
+  // }
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
-    const frameCount = 100;
-    draw(context, frameCount);
-  }, [draw]);
+    let frameCount = 0;
+    let animationFrameId;
+
+    //Our draw came here
+    const render = () => {
+      frameCount++;
+      
+      draw(context, frameCount);
+      animationFrameId = window.requestAnimationFrame(render);
+    };
+    render();
+
+    return () => {
+      window.cancelAnimationFrame(animationFrameId);
+    };
+  }, [draw, lastShot]);
+
+  // useEffect(() => {
+  //   const canvas = canvasRef.current;
+  //   const context = canvas.getContext("2d");
+  //   // const frameCount = 100;
+  //   draw(context);
+  // }, [draw]);
 
   return <canvas ref={canvasRef} height={canvasHeight} width={canvasWidth} />;
 };
