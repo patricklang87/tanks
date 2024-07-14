@@ -11,6 +11,7 @@ export const PlayDashboard = (props) => {
   const currentTank = tanks[currentPlayer - 1];
   const selectedAction = currentTank.selectedAction;
   const availableActions = currentTank.availableActions;
+  const availableActionsFiltered = availableActions.filter((action => action !== selectedAction))
 
   return (
     <div style={{ backgroundColor: "lightgrey", padding: "10px" }}>
@@ -24,7 +25,8 @@ export const PlayDashboard = (props) => {
                 setGameState,
                 value: e.target.value,
               })} className="form-select" aria-label="Select action">
-            {availableActions.map((action) => (
+                <option selected>{selectedAction}</option>
+            {availableActionsFiltered.map((action) => (
               <option key={action} value={action}>
                 {action}
               </option>

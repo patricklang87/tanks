@@ -4,7 +4,7 @@ export const tankDimensions = {
   turretLength: 15,
 };
 
-const tankColors = ["red", "black", "white", "yellow"];
+const tankColors = ["#FF76CE", "#FDFFC2", "#94FFD8", "#A3D8FF"];
 
 export const initiateTank = (props) => {
   const { index, tankPosition } = props;
@@ -18,7 +18,6 @@ export const initiateTank = (props) => {
     color: tankColors[index],
     fuel: 100,
     selectedAction: "Standard Shot",
-    availableActions: ["Standard Shot", "Drive"
-    ],
+    availableActions: ["Standard Shot", "Drive"],
   };
 };

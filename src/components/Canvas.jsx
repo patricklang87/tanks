@@ -323,7 +323,7 @@ const Canvas = (props) => {
     return () => {
       window.cancelAnimationFrame(animationFrameId);
     };
-  }, [draw, lastShot]);
+  }, [draw, lastShotAnimationCompleted]);
 
   // useEffect(() => {
   //   const canvas = canvasRef.current;
