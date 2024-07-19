@@ -126,7 +126,9 @@ export const advancePlayerTurn = (props) => {
       tankX: position[0],
       distance: driveDistance,
     });
-    const updatedTank = { ...currentTank, position: newTankPosition };
+    const updatedTank = { ...currentTank, targetPosition: newTankPosition
+      , tankDriveAnimationExecuting: true 
+    };
     tanksUpdatedGameState[currentPlayer - 1] = updatedTank;
   }
 

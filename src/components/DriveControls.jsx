@@ -32,8 +32,8 @@ const DriveControls = (props) => {
             }
             id={driveInputId}
             name="driveDistance"
-            min={-50}
-            max={50}
+            min={-150}
+            max={150}
           />
         </div>
       </div>

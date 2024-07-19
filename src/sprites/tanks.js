@@ -15,6 +15,8 @@ export const initiateTank = (props) => {
     driveDistance: 0,
     shields: 100,
     position: tankPosition,
+    targetPosition: tankPosition,
+    tankDriveAnimationExecuting: false,
     color: tankColors[index],
     fuel: 100,
     selectedAction: "Standard Shot",

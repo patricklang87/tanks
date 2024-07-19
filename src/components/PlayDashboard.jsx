@@ -25,7 +25,7 @@ export const PlayDashboard = (props) => {
                 setGameState,
                 value: e.target.value,
               })} className="form-select" aria-label="Select action">
-                <option selected>{selectedAction}</option>
+                <option defaultValue>{selectedAction}</option>
             {availableActionsFiltered.map((action) => (
               <option key={action} value={action}>
                 {action}

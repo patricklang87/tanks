@@ -1,6 +1,6 @@
 import { tankDimensions } from "../sprites/tanks";
 
-const centerTank = (props) => {
+export const centerTank = (props) => {
   const { uncenteredPoint } = props;
   const { width: tankWidth, height: tankHeight } = tankDimensions;
   const [tankX, tankY] = uncenteredPoint;

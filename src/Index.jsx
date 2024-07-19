@@ -8,7 +8,7 @@ function Index() {
   const canvasWidth = 1200;
 
   const { gameState, setGameState } = useInitiateGame({
-    numberOfPlayers: 4,
+    numberOfPlayers: 3,
     // numberOfPlayers: 1,
     canvasHeight,
     canvasWidth,
