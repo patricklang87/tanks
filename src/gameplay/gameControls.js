@@ -152,12 +152,11 @@ const getNextPlayer = (props) => {
   let nextPlayer;
   if (currentPlayer === numberOfPlayers) nextPlayer = 1;
   else nextPlayer = currentPlayer + 1;
-  console.log(tanksUpdatedGameState[nextPlayer - 1].shields);
   while (tanksUpdatedGameState[nextPlayer - 1].shields <= 0) {
     if (nextPlayer === numberOfPlayers) nextPlayer = 1;
     else nextPlayer++;
   }
-  console.log("np", nextPlayer);
+
   return nextPlayer;
 };
 

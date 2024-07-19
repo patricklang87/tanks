@@ -202,7 +202,6 @@ const Canvas = (props) => {
     if (!lastShotAnimationCompleted && lastShot.length > 0) {
       context.fillStyle = "#000000";
       context.beginPath();
-      console.log(lastShot)
       context.arc(
         lastShot[frameCount][0],
         lastShot[frameCount][1],
@@ -213,14 +212,12 @@ const Canvas = (props) => {
       context.fill();
     }
     if (frameCount === lastShot.length - 1) {
-      console.log("frameCount", lastShot.length - 1)
       const updatedTopography = gameState.updatedTopography;
       setGameState({...gameState, topography: updatedTopography, lastShotAnimationCompleted: true})
     }
   };
 
   const getTankDisplayPosition = (frameCount, tank, tankIndex) => {
-    console.log("tdae", tank.tankDriveAnimationExecuting)
     const tankDriveStep = 1;
     const tankPosition = tank.position;
     const targetPosition = tank.targetPosition;
@@ -231,9 +228,8 @@ const Canvas = (props) => {
     const newTankX = tankPosition[0] + frameCount * tankDriveStep * driveDirection
     let newTankPosition = [newTankX, getTankY({topography, tankX: newTankX})]
    
-    console.log("frameCount", frameCount)
+
     if (Math.abs(targetPosition[0] - newTankX) <= tankDriveStep) {
-      console.log("landinghere", targetPosition[0], tankPosition[0])
       newTankPosition = targetPosition }
     
    
