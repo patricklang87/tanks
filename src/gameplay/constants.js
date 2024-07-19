@@ -4,5 +4,6 @@ export const environmentConstants = {
     timeout: 40,
     frameRate: .1,
     // gravity: -5,
-    gravity: 5
+    gravity: 5,
+    destroyedTankColor: "#997570",
 }

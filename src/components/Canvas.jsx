@@ -55,7 +55,7 @@ import { getNewTankPosition, centerTank, getTankY } from "../utilities/tankPosit
 const Canvas = (props) => {
   const { gameState, setGameState } = props;
   const { topography, tanks, currentPlayer, lastShot, lastShotAnimationCompleted } = gameState;
-  const { canvasHeight, canvasWidth } = environmentConstants;
+  const { canvasHeight, canvasWidth, destroyedTankColor } = environmentConstants;
 
   const canvasRef = useRef(null);
 
@@ -106,7 +106,7 @@ const Canvas = (props) => {
     // });
 
     tanks.forEach((tank, index) => {
-      const { color, turretAngle} = tank;
+      const { color, shields, turretAngle} = tank;
       // const [tankX, tankY] = position;
         const [tankX, tankY] = getTankDisplayPosition(frameCount, tank, index)
       // ctx.fillStyle = "#000000";
@@ -114,10 +114,11 @@ const Canvas = (props) => {
       // ctx.arc(tankX, tankY, 10, 0, 2 * Math.PI);
       // ctx.fill();
 
-      ctx.fillStyle = color;
+      const tankFillColor = shields > 0 ? color : destroyedTankColor
+      ctx.fillStyle = tankFillColor;
       ctx.fillRect(tankX, tankY, tankDimensions.width, tankDimensions.height);
 
-      ctx.fillStyle = color;
+      ctx.fillStyle = tankFillColor;
       ctx.beginPath();
       ctx.arc(
         tankX + tankDimensions.width / 2,
@@ -135,7 +136,7 @@ const Canvas = (props) => {
       ctx.beginPath();
       ctx.moveTo(...startingPoint);
       ctx.lineTo(...endingPoint);
-      ctx.strokeStyle = color;
+      ctx.strokeStyle = tankFillColor;
       ctx.lineWidth = 3;
       ctx.stroke();
       ctx.closePath();

@@ -1,9 +1,11 @@
 import React from "react";
 import ProgressBar from "react-bootstrap/ProgressBar";
+import { environmentConstants } from "../gameplay/constants";
 
 const Shields = (props) => {
   const { gameState } = props;
   const { tanks } = gameState;
+  const {destroyedTankColor} = environmentConstants;
 
   return (
     <div style={{ padding: "10px" }}>
@@ -15,7 +17,7 @@ const Shields = (props) => {
             margin: "5px",
             radius: "10px",
             padding: "5px",
-            backgroundColor: tank.color,
+            backgroundColor: tank.shields > 0 ? tank.color : destroyedTankColor,
           }}
         >
           <span className="col-4">{tank.shields}%</span>
