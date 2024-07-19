@@ -4,6 +4,7 @@ import ShotControls from "./ShotControls";
 import DriveControls from "./DriveControls";
 import { advancePlayerTurn, setSelectedAction } from "../gameplay/gameControls";
 import { animationsAreExecuting } from "./playDashboardHooks";
+import { getAnimationStatement } from "./playDashboardHooks";
 
 const ControlSection = (props) => {
   const { gameState, setGameState, selectedAction, availableActionsFiltered } =
@@ -51,6 +52,7 @@ export const PlayDashboard = (props) => {
   const availableActionsFiltered = availableActions.filter(
     (action) => action !== selectedAction
   );
+  const animationStatement = getAnimationStatement(gameState);
 
   return (
     <div style={{ backgroundColor: "lightgrey", padding: "10px" }}>
@@ -59,7 +61,7 @@ export const PlayDashboard = (props) => {
           <Shields gameState={gameState} />
         </div>
         <div className="col-7">
-          {animationsExecuting && <p>Please wait...</p>}
+          {animationsExecuting && <p>&quot;{animationStatement}&quot;</p>}
           {!animationsExecuting && (
             <ControlSection
               gameState={gameState}

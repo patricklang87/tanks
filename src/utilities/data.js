@@ -11,3 +11,8 @@ export const getCurrentShotDamage = gameState => {
     if (!actions[selectedAction].damage) return 0;
     return actions[selectedAction]. damage;
 }
+
+export const getRandomIndexItem = (array) => {
+    const randomIndex = Math.floor(Math.random() * array.length)
+    return array[randomIndex]
+}
