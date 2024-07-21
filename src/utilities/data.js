@@ -8,11 +8,17 @@ export const getCurrentTank = gameState => {
 export const getCurrentShotDamage = gameState => {
     const currentTank = getCurrentTank(gameState);
     const selectedAction = currentTank.selectedAction;
-    if (!actions[selectedAction].damage) return 0;
-    return actions[selectedAction]. damage;
+    const availableActions = currentTank.availableActions;
+    const selectedActionData = getSelectedActionData(selectedAction, availableActions)
+    if (!selectedActionData.damage) return 0;
+    return selectedActionData.damage;
 }
 
 export const getRandomIndexItem = (array) => {
     const randomIndex = Math.floor(Math.random() * array.length)
     return array[randomIndex]
+}
+
+export const getSelectedActionData = (selectedAction, availableActions) => {
+    return availableActions.find(action => action.name === selectedAction) || {}
 }

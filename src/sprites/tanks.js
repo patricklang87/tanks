@@ -1,3 +1,5 @@
+import { actions } from "./actions";
+
 export const tankDimensions = {
   height: 10,
   width: 20,
@@ -19,7 +21,7 @@ export const initiateTank = (props) => {
     tankDriveAnimationExecuting: false,
     color: tankColors[index],
     fuel: 100,
-    selectedAction: "Standard Shot",
-    availableActions: ["Standard Shot", "Drive"],
+    selectedAction: "standardShot",
+    availableActions: [actions.standardShot, actions.steelShotput, actions.drive]
   };
 };

@@ -5,6 +5,8 @@ import DriveControls from "./DriveControls";
 import { advancePlayerTurn, setSelectedAction } from "../gameplay/gameControls";
 import { animationsAreExecuting } from "./playDashboardHooks";
 import { getAnimationStatement } from "./playDashboardHooks";
+import { actions } from "../sprites/actions";
+import { getSelectedActionData } from "../utilities/data";
 
 const ControlSection = (props) => {
   const { gameState, setGameState, selectedAction, availableActionsFiltered } =
@@ -23,17 +25,18 @@ const ControlSection = (props) => {
         className="form-select"
         aria-label="Select action"
       >
-        <option defaultValue>{selectedAction}</option>
-        {availableActionsFiltered.map((action) => (
-          <option key={action} value={action}>
-            {action}
-          </option>
-        ))}
+        <option defaultValue>{selectedAction.displayName}</option>
+        {availableActionsFiltered.map((action) => {
+          console.log("action for selection", action )
+          return (<option key={action.name} value={action.name}>
+            {action.displayName}
+          </option>)
+        })}
       </select>
-      {selectedAction === "Standard Shot" && (
+      {selectedAction.type === "PROJECTILE" && (
         <ShotControls gameState={gameState} setGameState={setGameState} />
       )}
-      {selectedAction === "Drive" && (
+      {selectedAction.type === "DRIVE" && (
         <DriveControls gameState={gameState} setGameState={setGameState} />
       )}{" "}
     </>
@@ -47,10 +50,13 @@ export const PlayDashboard = (props) => {
 
   const { currentPlayer, tanks } = gameState;
   const currentTank = tanks[currentPlayer - 1];
-  const selectedAction = currentTank.selectedAction;
+
+  const selectedAction = getSelectedActionData(currentTank.selectedAction, currentTank.availableActions)
+  console.log("actions", actions);
+  console.log("selectedAction pulled out", selectedAction);
   const availableActions = currentTank.availableActions;
   const availableActionsFiltered = availableActions.filter(
-    (action) => action !== selectedAction
+    (action) => action.name !== selectedAction.name
   );
   const animationStatement = getAnimationStatement(gameState);
 
@@ -77,7 +83,7 @@ export const PlayDashboard = (props) => {
             disabled={animationsExecuting}
             onClick={() => advancePlayerTurn({ gameState, setGameState })}
           >
-            {selectedAction === "Drive" ? "Drive!" : "Fire!"}
+            {selectedAction.type === "DRIVE" ? "Drive!" : "Fire!"}
           </button>
         </div>
       </div>

@@ -17,6 +17,7 @@ import { environmentConstants } from "./constants";
 import { tankDimensions } from "../sprites/tanks";
 import { actions } from "../sprites/actions";
 import { getNewTankPosition } from "../utilities/tankPosition";
+import { getSelectedActionData } from "../utilities/data";
 
 export const useInitiateGame = (props) => {
   const {
@@ -104,12 +105,12 @@ export const advancePlayerTurn = (props) => {
   const { numberOfPlayers, currentPlayer, topography } = gameState;
 
   const currentTank = gameState.tanks[currentPlayer - 1];
-  const selectedAction = currentTank.selectedAction;
+  const selectedAction = getSelectedActionData(currentTank.selectedAction, currentTank.availableActions);
   let updatedLastShot = [];
   let tanksUpdatedGameState = [...gameState.tanks];
   let newTopography = topography;
 
-  if (selectedAction === "Standard Shot") {
+  if (selectedAction.type === "PROJECTILE") {
     const { newLastShot, tanksNewGameState, groundHit } =
       launchProjectile(props);
     updatedLastShot = newLastShot;
@@ -119,7 +120,7 @@ export const advancePlayerTurn = (props) => {
     }
   }
 
-  if (selectedAction === "Drive") {
+  if (selectedAction.type === "DRIVE") {
     const { position, driveDistance } = currentTank;
     const newTankPosition = getNewTankPosition({
       topography,
