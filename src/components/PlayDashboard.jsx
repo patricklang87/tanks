@@ -11,6 +11,7 @@ import { getSelectedActionData } from "../utilities/data";
 const ControlSection = (props) => {
   const { gameState, setGameState, selectedAction, availableActionsFiltered } =
     props;
+
   return (
     <>
       {" "}
@@ -27,8 +28,7 @@ const ControlSection = (props) => {
       >
         <option defaultValue>{selectedAction.displayName}</option>
         {availableActionsFiltered.map((action) => {
-          console.log("action for selection", action )
-          return (<option key={action.name} value={action.name}>
+          return (<option key={action.name} value={action.name} disabled={action.rounds === 0}>
             {action.displayName}
           </option>)
         })}
@@ -59,6 +59,7 @@ export const PlayDashboard = (props) => {
     (action) => action.name !== selectedAction.name
   );
   const animationStatement = getAnimationStatement(gameState);
+  const noRoundsRemain = selectedAction.rounds === 0 && selectedAction.type === "PROJECTILE"
 
   return (
     <div style={{ backgroundColor: "lightgrey", padding: "10px" }}>
@@ -80,7 +81,7 @@ export const PlayDashboard = (props) => {
 
         <div className="col-1">
           <button
-            disabled={animationsExecuting}
+            disabled={animationsExecuting || noRoundsRemain}
             onClick={() => advancePlayerTurn({ gameState, setGameState })}
           >
             {selectedAction.type === "DRIVE" ? "Drive!" : "Fire!"}

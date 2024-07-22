@@ -4,54 +4,6 @@ import { calculateTurretEndpoints } from "../utilities/turretPosition";
 import { environmentConstants } from "../gameplay/constants";
 import { getNewTankPosition, centerTank, getTankY } from "../utilities/tankPosition";
 
-/* eslint-disable react/prop-types */
-// const Canvas = props => {
-
-//   const canvasRef = useRef(null)
-
-//   const draw = (ctx, frameCount) => {
-//     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-
-//     var grd = ctx.createRadialGradient(75, 50, 5, 90, 60, 100);
-// grd.addColorStop(0, "red");
-// grd.addColorStop(1, "white");
-
-// // Fill with gradient
-// ctx.fillStyle = grd;
-// ctx.fillRect(10, 10, 150, 80);
-
-//     ctx.fillStyle = '#ffff11'
-//     ctx.beginPath()
-//     ctx.arc(50, 100, 20*Math.sin(frameCount*0.05)**2, 0, 2*Math.PI)
-//     ctx.fill()
-
-//   }
-
-//   useEffect(() => {
-
-//     const canvas = canvasRef.current;
-//     const context = canvas.getContext('2d');
-//     let frameCount = 0;
-//     let animationFrameId;
-
-//     //Our draw came here
-//     const render = () => {
-//       frameCount++;
-//       draw(context, frameCount);
-//       animationFrameId = window.requestAnimationFrame(render);
-//     }
-//     render()
-
-//     return () => {
-//       window.cancelAnimationFrame(animationFrameId)
-//     }
-//   }, [draw])
-
-//   return <canvas ref={canvasRef} {...props}/>
-// }
-
-// export default Canvas
-
 const Canvas = (props) => {
   const { gameState, setGameState } = props;
   const { topography, tanks, currentPlayer, lastShot, lastShotAnimationCompleted } = gameState;
@@ -98,22 +50,9 @@ const Canvas = (props) => {
     ctx.fill();
     ctx.closePath();
 
-    // add tanks
-    // const tankPositions = generateTankPositions({
-    //   canvasWidth: width,
-    //   topography: initialTopography,
-    //   numberOfTanks: 3,
-    // });
-
     tanks.forEach((tank, index) => {
       const { color, shields, turretAngle} = tank;
-      // const [tankX, tankY] = position;
         const [tankX, tankY] = getTankDisplayPosition(frameCount, tank, index)
-      // ctx.fillStyle = "#000000";
-      // ctx.beginPath();
-      // ctx.arc(tankX, tankY, 10, 0, 2 * Math.PI);
-      // ctx.fill();
-
       const tankFillColor = shields > 0 ? color : destroyedTankColor
       ctx.fillStyle = tankFillColor;
       ctx.fillRect(tankX, tankY, tankDimensions.width, tankDimensions.height);
@@ -241,19 +180,6 @@ const Canvas = (props) => {
     }
     return centerTank({uncenteredPoint: newTankPosition})
   }
-
-  // const drawTrajectory = (ctx) => {
-  //       // lastShot
-  //       ctx.beginPath();
-  //       if (lastShot.length > 0) {
-  //         ctx.moveTo(...lastShot[0]);
-  //         lastShot.forEach((point) => ctx.lineTo(...point));
-  //         ctx.lineWidth = 2;
-  //         ctx.strokeStyle = "grey";
-  //         ctx.stroke();
-  //         ctx.closePath();
-  //       }
-  // }
 
   useEffect(() => {
     const canvas = canvasRef.current;

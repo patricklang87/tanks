@@ -22,6 +22,10 @@ export const initiateTank = (props) => {
     color: tankColors[index],
     fuel: 100,
     selectedAction: "standardShot",
-    availableActions: [actions.standardShot, actions.steelShotput, actions.drive]
+    availableActions: [
+      actions.standardShot,
+      actions.steelShotput,
+      actions.drive,
+    ],
   };
 };
