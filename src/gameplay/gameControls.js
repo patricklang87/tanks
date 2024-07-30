@@ -18,6 +18,7 @@ import { tankDimensions } from "../sprites/tanks";
 import { actions } from "../sprites/actions";
 import { getNewTankPosition } from "../utilities/tankPosition";
 import { getSelectedActionData } from "../utilities/data";
+import { getTankY } from "../utilities/tankPosition";
 
 export const useInitiateGame = (props) => {
   const {
@@ -120,6 +121,7 @@ export const advancePlayerTurn = (props) => {
     tanksUpdatedGameState = tanksNewGameState;
     if (groundHit !== null) {
       newTopography = updateTopographyOnStrike({ gameState, point: groundHit });
+      tanksUpdatedGameState = makeTanksFall({ gameState, newTopography });
     }
   }
 
@@ -148,7 +150,9 @@ export const advancePlayerTurn = (props) => {
     currentPlayer: nextPlayer,
     lastShot: updatedLastShot,
     lastShotAnimationCompleted: false,
-    tanks: tanksUpdatedGameState,
+    tanks:
+      selectedAction.type === "DRIVE" ? tanksUpdatedGameState : gameState.tanks,
+    tanksUpdatedGameState,
     updatedTopography: newTopography,
   });
 };
@@ -296,4 +300,25 @@ export const launchProjectile = (props) => {
   }
 
   return { newLastShot: newTrajectory, tanksNewGameState, groundHit };
+};
+
+export const makeTanksFall = (props) => {
+  const { gameState, newTopography } = props;
+  const { tanks } = gameState;
+  const updatedTanks = tanks.map((tank) => {
+    const newTankPosition = getNewTankPosition({
+      topography: newTopography,
+      tankX: tank.position[0],
+      distance: 0,
+    });
+    if (tank.position[1] < newTankPosition[1]) {
+      return {
+        ...tank,
+        targetPosition: newTankPosition,
+        tankDriveAnimationExecuting: true,
+      };
+    }
+    return tank;
+  });
+  return updatedTanks;
 };
