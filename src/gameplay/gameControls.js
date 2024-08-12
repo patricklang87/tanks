@@ -14,9 +14,8 @@ import {
   createTrajectory,
 } from "../utilities/calculateTrajectory";
 import { environmentConstants } from "./constants";
-import { tankDimensions } from "../sprites/tanks";
 import { actions } from "../sprites/actions";
-import { getNewTankPosition } from "../utilities/tankPosition";
+import { getNewTankPosition, centerTank } from "../utilities/tankPosition";
 import { getSelectedActionData } from "../utilities/data";
 
 export const useInitiateGame = (props) => {
@@ -130,9 +129,10 @@ export const advancePlayerTurn = (props) => {
       tankX: position[0],
       distance: driveDistance,
     });
+    const centeredTankPosition = centerTank(newTankPosition)
     const updatedTank = {
       ...currentTank,
-      targetPosition: newTankPosition,
+      targetPosition: centeredTankPosition,
       tankDriveAnimationExecuting: true,
     };
     tanksUpdatedGameState[currentPlayer - 1] = updatedTank;

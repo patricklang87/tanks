@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 import { tankDimensions } from "../sprites/tanks";
 import { calculateTurretEndpoints } from "../utilities/turretPosition";
 import { environmentConstants } from "../gameplay/constants";
-import { getNewTankPosition, centerTank, getTankY } from "../utilities/tankPosition";
+import { getNewTankPosition, centerTank, centerTankVertically, getTankY } from "../utilities/tankPosition";
 
 const Canvas = (props) => {
   const { gameState, setGameState } = props;
@@ -165,11 +165,14 @@ const Canvas = (props) => {
     if (!tankDriveAnimationExecuting) return tankPosition
     
     const newTankX = tankPosition[0] + frameCount * tankDriveStep * driveDirection
-    let newTankPosition = [newTankX, getTankY({topography, tankX: newTankX})]
+    // possibility: tank is already centered for x, only needs to be centered for Y
+    let newTankPosition = centerTankVertically(getNewTankPosition({ topography, tankX: newTankX, distance: 0 }));
+
+    // [newTankX, getTankY({topography, tankX: newTankX})];
    
 
     if (Math.abs(targetPosition[0] - newTankX) <= tankDriveStep) {
-      newTankPosition = targetPosition }
+      newTankPosition = targetPosition}
     
    
     if (newTankPosition === targetPosition) {
@@ -178,7 +181,7 @@ const Canvas = (props) => {
       tanksUpdatedGameState[tankIndex] = updatedTank;
       setGameState({...gameState, tanks: tanksUpdatedGameState})
     }
-    return centerTank({uncenteredPoint: newTankPosition})
+    return newTankPosition
   }
 
   useEffect(() => {

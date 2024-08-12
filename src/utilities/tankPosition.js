@@ -1,11 +1,15 @@
 import { tankDimensions } from "../sprites/tanks";
 
-export const centerTank = (props) => {
-  const { uncenteredPoint } = props;
+export const centerTank = (uncenteredPoint) => {
   const { width: tankWidth, height: tankHeight } = tankDimensions;
   const [tankX, tankY] = uncenteredPoint;
   return [tankX - tankWidth / 2, tankY - tankHeight];
 };
+
+export const centerTankVertically = (uncenteredPoint) => {
+  const { height: tankHeight } = tankDimensions;
+  return [uncenteredPoint[0], uncenteredPoint[1] - tankHeight];
+}
 
 export const generateTankPositions = (props) => {
   const { canvasWidth, topography, numberOfTanks = 2 } = props;
@@ -19,7 +23,7 @@ export const generateTankPositions = (props) => {
   return rangeStarts.map((start) => {
     const tankX = start + Math.random() * rangeWidth;
     const tankY = getTankY({ topography, tankX });
-    return centerTank({ uncenteredPoint: [tankX, tankY] });
+    return centerTank([tankX, tankY]);
   });
 };
 
@@ -40,5 +44,5 @@ export const getNewTankPosition = (props) => {
   const { topography, tankX, distance } = props;
   const newTankX = Number(tankX) + Number(distance);
   const newTankY = getTankY({topography, tankX: newTankX});
-  return centerTank({uncenteredPoint: [newTankX, newTankY]});
+  return [newTankX, newTankY];
 }
