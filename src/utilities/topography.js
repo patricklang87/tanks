@@ -1,5 +1,6 @@
 import { getYForXInLine } from "./calculateTrajectory";
 import { getCurrentTank, getCurrentShotDamage} from "./data";
+// import { getCoordinatesOnCircle } from "./circleManipulation";
 
 const calculateStartingHeight = (props) => {
   const { canvasHeight, minHeightCoefficient, maxHeightCoefficient } = props;
