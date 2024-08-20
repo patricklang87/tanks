@@ -182,43 +182,43 @@ const Canvas = (props) => {
     const tankDriveAnimationExecuting = tank.tankDriveAnimationExecuting;
     if (!tankDriveAnimationExecuting) return tankPosition;
 
-    let newTankPosition
+    let displayTankPosition;
     if (targetPosition[0] !== tankPosition[0]) {
       const newTankX =
         tankPosition[0] + frameCount * tankDriveStep * driveDirection;
-      newTankPosition = [
-        newTankX,
-        getTankY({ topography, tankX: newTankX }),
-      ];
+      displayTankPosition = centerTank([newTankX, getTankY({ topography, tankX: newTankX })]);
 
-      if (Math.abs(targetPosition[0] - newTankX) <= tankDriveStep) {
-        newTankPosition = targetPosition;
+      if (Math.abs(targetPosition[0] - displayTankPosition[0]) <= tankDriveStep) {
+        displayTankPosition = targetPosition;
       }
     }
 
-    if (targetPosition[0] === tankPosition[0] && targetPosition[1] > tankPosition[1]) {
+    if (
+      targetPosition[0] === tankPosition[0] &&
+      targetPosition[1] > tankPosition[1]
+    ) {
       // 1/2 * gravity * time ** 2
       // const newTankY = tankPosition[1] + 0.5 * environmentConstants.gravity * frameCount**2;
-      const newTankY = tankPosition[1] + tankFallStep * frameCount
-      newTankPosition= [tankPosition[0], newTankY]
+      const newTankY = tankPosition[1] + tankFallStep * frameCount;
+      displayTankPosition = [tankPosition[0], newTankY];
 
       if (Math.abs(targetPosition[1] - newTankY) <= tankFallStep) {
-        console.log("updating tank position")
-        newTankPosition = targetPosition;
+        console.log("updating tank position");
+        displayTankPosition = targetPosition;
       }
     }
 
-    if (newTankPosition === targetPosition) {
+    if (displayTankPosition === targetPosition) {
       let tanksUpdatedGameState = [...tanks];
       const updatedTank = {
         ...tank,
-        position: centerTank({uncenteredPoint: targetPosition}),
+        position: targetPosition,
         tankDriveAnimationExecuting: false,
       };
       tanksUpdatedGameState[tankIndex] = updatedTank;
       setGameState({ ...gameState, tanks: tanksUpdatedGameState });
     }
-    return centerTank({ uncenteredPoint: newTankPosition });
+    return displayTankPosition;
   };
 
   useEffect(() => {
