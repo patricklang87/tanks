@@ -64,8 +64,18 @@ export const updateTopographyOnStrike = props => {
   const leftTopography = topography.slice(0, leftCraterLeftIndex + 1);
   const rightTopography = topography. slice(rightCraterRightIndex, topography.length)
 
-
+  const rightCraterWall = getCoordinatesOnCircle({center: point, radius: damage, angle: 45});
+  const leftCraterWall = getCoordinatesOnCircle({center: point, radius: damage, angle: -225})
   const craterBase = [point[0], point[1] + damage]
-  return [...leftTopography, leftCrater, craterBase, rightCrater, ...rightTopography]
+  console.log("crater", leftCrater, leftCraterWall, craterBase, rightCraterWall, rightCrater)
+  return [...leftTopography, leftCrater, leftCraterWall, craterBase, rightCraterWall, rightCrater, ...rightTopography]
 
+}
+
+const getCoordinatesOnCircle = (props) => {
+  const {center, radius, angle} = props;
+  const [x, y] = center;
+  const xPosition = x + radius * Math.cos(Math.PI * 2 * angle / 360);
+  const yPosition = y + radius * Math.sin(Math.PI * 2 * angle / 360);
+  return [xPosition, yPosition]
 }

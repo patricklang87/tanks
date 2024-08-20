@@ -51,11 +51,11 @@ const Canvas = (props) => {
     });
     ctx.lineTo(
       environmentConstants.canvasWidth,
-      environmentConstants.canvasHeight
+      environmentConstants.canvasHeight + environmentConstants.landscapeStrokeWidth
     );
     ctx.lineTo(0, environmentConstants.canvasHeight);
     ctx.strokeStyle = "darkgreen";
-    ctx.lineWidth = 8;
+    ctx.lineWidth = environmentConstants.landscapeStrokeWidth;
     ctx.stroke();
     ctx.fillStyle = "lightgreen";
     ctx.fill();

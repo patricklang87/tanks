@@ -10,7 +10,7 @@ export const actions = {
   steelShotput: {
     name: "steelShotput",
     displayName: "Steel Shotput",
-    damage: 150,
+    damage: 20,
     type: "PROJECTILE",
     rounds: 3,
   },
