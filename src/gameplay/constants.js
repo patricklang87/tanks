@@ -3,7 +3,6 @@ export const environmentConstants = {
   canvasWidth: 1200,
   timeout: 40,
   frameRate: 0.1,
-  // gravity: -5,
   gravity: 5,
   destroyedTankColor: "#997570",
 };

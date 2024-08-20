@@ -15,7 +15,11 @@ import {
 } from "../utilities/calculateTrajectory";
 import { environmentConstants } from "./constants";
 import { actions } from "../sprites/actions";
-import { getNewTankPosition, centerTank } from "../utilities/tankPosition";
+import {
+  getNewTankPosition,
+  getTankY,
+  centerTank,
+} from "../utilities/tankPosition";
 import { getSelectedActionData } from "../utilities/data";
 
 export const useInitiateGame = (props) => {
@@ -119,6 +123,20 @@ export const advancePlayerTurn = (props) => {
     tanksUpdatedGameState = tanksNewGameState;
     if (groundHit !== null) {
       newTopography = updateTopographyOnStrike({ gameState, point: groundHit });
+      tanksUpdatedGameState = tanksUpdatedGameState.map((tank, index) => {
+        console.log("made it in");
+        const tankPosition = tank.position;
+        const newTankPosition = getNewTankPosition({
+          tankX: tank.position[0],
+          topography: newTopography,
+          distance: 0,
+        });
+        if (tankPosition[1] !== newTankPosition[1]) {
+          console.log(index, "not a match", tankPosition, newTankPosition);
+          return { ...tank, position: newTankPosition };
+        }
+        return tank;
+      });
     }
   }
 
@@ -129,7 +147,7 @@ export const advancePlayerTurn = (props) => {
       tankX: position[0],
       distance: driveDistance,
     });
-    const centeredTankPosition = centerTank(newTankPosition)
+    const centeredTankPosition = centerTank(newTankPosition);
     const updatedTank = {
       ...currentTank,
       targetPosition: centeredTankPosition,
