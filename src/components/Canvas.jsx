@@ -203,7 +203,6 @@ const Canvas = (props) => {
       displayTankPosition = [tankPosition[0], newTankY];
 
       if (Math.abs(targetPosition[1] - newTankY) <= tankFallStep) {
-        console.log("updating tank position");
         displayTankPosition = targetPosition;
       }
     }
