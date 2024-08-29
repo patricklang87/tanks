@@ -51,7 +51,8 @@ const Canvas = (props) => {
     });
     ctx.lineTo(
       environmentConstants.canvasWidth,
-      environmentConstants.canvasHeight + environmentConstants.landscapeStrokeWidth
+      environmentConstants.canvasHeight +
+        environmentConstants.landscapeStrokeWidth
     );
     ctx.lineTo(0, environmentConstants.canvasHeight);
     ctx.strokeStyle = "darkgreen";
@@ -65,7 +66,11 @@ const Canvas = (props) => {
 
     tanks.forEach((tank, index) => {
       const { color, shields, turretAngle } = tank;
-      const [tankX, tankY] = getTankDisplayPosition(frameCount, tank, index);
+      const [tankX, tankY] = getTankDisplayPosition(
+        frameCount,
+        tank,
+        index
+      );
       const tankFillColor = shields > 0 ? color : destroyedTankColor;
       ctx.fillStyle = tankFillColor;
       ctx.fillRect(tankX, tankY, tankDimensions.width, tankDimensions.height);
@@ -183,12 +188,18 @@ const Canvas = (props) => {
     if (!tankDriveAnimationExecuting) return tankPosition;
 
     let displayTankPosition;
+
     if (targetPosition[0] !== tankPosition[0]) {
       const newTankX =
         tankPosition[0] + frameCount * tankDriveStep * driveDirection;
-      displayTankPosition = centerTank([newTankX, getTankY({ topography, tankX: newTankX })]);
+      displayTankPosition = centerTank([
+        newTankX,
+        getTankY({ topography, tankX: newTankX }),
+      ]);
 
-      if (Math.abs(targetPosition[0] - displayTankPosition[0]) <= tankDriveStep) {
+      if (
+        Math.abs(targetPosition[0] - displayTankPosition[0]) <= tankDriveStep
+      ) {
         displayTankPosition = targetPosition;
       }
     }

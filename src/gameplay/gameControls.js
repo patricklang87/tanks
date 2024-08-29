@@ -306,11 +306,8 @@ export const makeTanksFall = (props) => {
   const { gameState, newTopography } = props;
   const { tanks } = gameState;
   const updatedTanks = tanks.map((tank) => {
-    const newTankPosition = getNewTankPosition({
-      topography: newTopography,
-      tankX: tank.position[0],
-      distance: 0,
-    });
+    const newTankY = getTankY({ topography: newTopography, tankX: tank.position[0] });
+    const newTankPosition = [tank.position[0], newTankY - tankDimensions.height]
     if (tank.position[1] < newTankPosition[1]) {
       return {
         ...tank,
