@@ -251,6 +251,7 @@ export const launchProjectile = (props) => {
       tankUpdated = {
         ...tankUpdated,
         shields: tankUpdated.shields - damage,
+        currentColor: arrayToRgba(environmentConstants.struckTankColor),
       };
     }
     if (index === currentPlayer - 1) {
