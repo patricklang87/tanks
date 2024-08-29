@@ -1,9 +1,8 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import { tankDimensions } from "../sprites/tanks";
 import { calculateTurretEndpoints } from "../utilities/turretPosition";
 import { environmentConstants } from "../gameplay/constants";
 import {
-  getNewTankPosition,
   centerTank,
   getTankY,
 } from "../utilities/tankPosition";
@@ -22,7 +21,7 @@ const Canvas = (props) => {
 
   const canvasRef = useRef(null);
 
-  const draw = (ctx, frameCount) => {
+  const draw = useCallback((ctx, frameCount) => {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
     var grd = ctx.createRadialGradient(75, 50, 5, 90, 60, 100);
@@ -148,11 +147,8 @@ const Canvas = (props) => {
     ctx.lineWidth = 3;
     ctx.stroke();
     ctx.closePath();
+  });
 
-    // drawProjectile(ctx, frameCount);
-  };
-
-  // parabola
 
   const drawProjectile = (context, frameCount) => {
     if (!lastShotAnimationCompleted && lastShot.length > 0) {
