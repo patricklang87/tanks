@@ -24,4 +24,11 @@ export const textConstants = {
     "Now we see WHO'S the BEST!",
     "This is the best I can do :("
   ],
+  fallingStatements: [
+    "AHHHHHHHHHH!",
+    "Keeeer-plunk!",
+    "All downhill from here!",
+    "I don't, like, even care or whatever.",
+    "Woahwoahwoahwoah!"
+  ]
 };

@@ -121,6 +121,7 @@ export const advancePlayerTurn = (props) => {
     tanksUpdatedGameState = tanksNewGameState;
     if (groundHit !== null) {
       newTopography = updateTopographyOnStrike({ gameState, point: groundHit });
+      console.log("calling maketanksfall")
       tanksUpdatedGameState = makeTanksFall({ gameState, newTopography });
     }
   }
@@ -150,7 +151,7 @@ export const advancePlayerTurn = (props) => {
     currentPlayer: nextPlayer,
     lastShot: updatedLastShot,
     lastShotAnimationCompleted: false,
-    tanks:
+    tanks: 
       selectedAction.type === "DRIVE" ? tanksUpdatedGameState : gameState.tanks,
     tanksUpdatedGameState,
     updatedTopography: newTopography,
@@ -307,12 +308,12 @@ export const makeTanksFall = (props) => {
   const { tanks } = gameState;
   const updatedTanks = tanks.map((tank) => {
     const newTankY = getTankY({ topography: newTopography, tankX: tank.position[0] });
-    const newTankPosition = [tank.position[0], newTankY - tankDimensions.height]
+    const newTankPosition = [tank.position[0], newTankY  - tankDimensions.height]
     if (tank.position[1] < newTankPosition[1]) {
       return {
         ...tank,
         targetPosition: newTankPosition,
-        tankDriveAnimationExecuting: true,
+        tankFallAnimationExecuting: true,
       };
     }
     return tank;

@@ -184,8 +184,9 @@ const Canvas = (props) => {
     const tankPosition = tank.position;
     const targetPosition = tank.targetPosition;
     const driveDirection = tankPosition[0] <= targetPosition[0] ? 1 : -1;
-    const tankDriveAnimationExecuting = tank.tankDriveAnimationExecuting;
-    if (!tankDriveAnimationExecuting) return tankPosition;
+    const { tankDriveAnimationExecuting, tankFallAnimationExecuting } = tank;
+
+    if (!tankDriveAnimationExecuting && !tankFallAnimationExecuting) return tankPosition;
 
     let displayTankPosition;
 
@@ -220,13 +221,17 @@ const Canvas = (props) => {
 
     if (displayTankPosition === targetPosition) {
       let tanksUpdatedGameState = [...tanks];
+      console.log("tugs1", tankIndex, tanksUpdatedGameState)
       const updatedTank = {
         ...tank,
         position: targetPosition,
-        tankDriveAnimationExecuting: false,
+        tankFallAnimationExecuting: false,
       };
       tanksUpdatedGameState[tankIndex] = updatedTank;
+      console.log("tugs2", tankIndex, tanksUpdatedGameState)
       setGameState({ ...gameState, tanks: tanksUpdatedGameState });
+    } else {
+      console.log("no match", tankIndex)
     }
     return displayTankPosition;
   };
