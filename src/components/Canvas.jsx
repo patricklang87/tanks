@@ -167,7 +167,7 @@ const Canvas = (props) => {
       );
       context.fill();
     }
-    if (frameCount === lastShot.length - 1) {
+    if (frameCount === lastShot.length - 1 && !lastShotAnimationCompleted) {
       const updatedTopography = gameState.updatedTopography;
       setGameState({
         ...gameState,
@@ -209,12 +209,10 @@ const Canvas = (props) => {
       targetPosition[0] === tankPosition[0] &&
       targetPosition[1] > tankPosition[1]
     ) {
-      // 1/2 * gravity * time ** 2
-      // const newTankY = tankPosition[1] + 0.5 * environmentConstants.gravity * frameCount**2;
-      const newTankY = tankPosition[1] + tankFallStep * frameCount;
+      const newTankY = tankPosition[1] + environmentConstants.tankFallConstant * environmentConstants.gravity * frameCount**2;
       displayTankPosition = [tankPosition[0], newTankY];
 
-      if (Math.abs(targetPosition[1] - newTankY) <= tankFallStep) {
+      if (Math.abs(targetPosition[1] - newTankY) <= tankFallStep || newTankY > targetPosition[1]) {
         displayTankPosition = targetPosition;
       }
     }
