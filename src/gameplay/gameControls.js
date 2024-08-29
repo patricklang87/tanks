@@ -21,6 +21,7 @@ import {
   centerTank,
 } from "../utilities/tankPosition";
 import { getSelectedActionData } from "../utilities/data";
+import { arrayToRgba } from "../utilities/colorManipulation";
 
 export const useInitiateGame = (props) => {
   const {

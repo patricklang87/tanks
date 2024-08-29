@@ -5,6 +5,7 @@ export const environmentConstants = {
   frameRate: 0.1,
   gravity: 5,
   destroyedTankColor: "#997570",
+  struckTankColor: [255, 0, 0, 1],
 };
 
 export const textConstants = {

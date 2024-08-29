@@ -1,4 +1,5 @@
 import { actions } from "./actions";
+import { arrayToRgba } from "../utilities/colorManipulation";
 
 export const tankDimensions = {
   height: 10,
@@ -6,7 +7,14 @@ export const tankDimensions = {
   turretLength: 15,
 };
 
-const tankColors = ["#FF76CE", "#FDFFC2", "#94FFD8", "#A3D8FF"];
+const tankColors = [
+  [255, 118, 206, 1],
+  [253, 255, 194, 1],
+  [148, 255, 216, 1],
+  [163, 216, 255, 1],
+];
+
+
 
 export const initiateTank = (props) => {
   const { index, tankPosition } = props;
@@ -19,7 +27,8 @@ export const initiateTank = (props) => {
     position: tankPosition,
     targetPosition: tankPosition,
     tankDriveAnimationExecuting: false,
-    color: tankColors[index],
+    localColor: arrayToRgba(tankColors[index]),
+    currentColor: arrayToRgba(tankColors[index]),
     fuel: 100,
     selectedAction: "standardShot",
     availableActions: [

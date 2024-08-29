@@ -61,9 +61,9 @@ const Canvas = (props) => {
     ctx.closePath();
 
     tanks.forEach((tank, index) => {
-      const { color, shields, turretAngle } = tank;
+      const { currentColor, shields, turretAngle } = tank;
       const [tankX, tankY] = getTankDisplayPosition(frameCount, tank, index);
-      const tankFillColor = shields > 0 ? color : destroyedTankColor;
+      const tankFillColor = shields > 0 ? currentColor : destroyedTankColor;
       ctx.fillStyle = tankFillColor;
       ctx.fillRect(tankX, tankY, tankDimensions.width, tankDimensions.height);
 
@@ -97,7 +97,7 @@ const Canvas = (props) => {
     const displayTankX = tankDimensions.width * 2;
     const displayTankY = canvasHeight - tankDimensions.width * 2;
 
-    ctx.strokeStyle = currentTank.color;
+    ctx.strokeStyle = currentTank.currentColor;
     ctx.beginPath();
     ctx.arc(
       displayTankX + tankDimensions.width / 2,
@@ -109,7 +109,7 @@ const Canvas = (props) => {
     ctx.stroke();
     ctx.closePath();
 
-    ctx.fillStyle = currentTank.color;
+    ctx.fillStyle = currentTank.currentColor;
     ctx.fillRect(
       displayTankX,
       displayTankY,
@@ -117,7 +117,7 @@ const Canvas = (props) => {
       tankDimensions.height
     );
 
-    ctx.fillStyle = currentTank.color;
+    ctx.fillStyle = currentTank.currentColor;
     ctx.beginPath();
     ctx.arc(
       displayTankX + tankDimensions.width / 2,
@@ -136,7 +136,7 @@ const Canvas = (props) => {
     ctx.beginPath();
     ctx.moveTo(...startingPoint);
     ctx.lineTo(...endingPoint);
-    ctx.strokeStyle = currentTank.color;
+    ctx.strokeStyle = currentTank.currentColor;
     ctx.lineWidth = 3;
     ctx.stroke();
     ctx.closePath();

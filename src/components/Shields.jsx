@@ -17,7 +17,7 @@ const Shields = (props) => {
             margin: "5px",
             radius: "10px",
             padding: "5px",
-            backgroundColor: tank.shields > 0 ? tank.color : destroyedTankColor,
+            backgroundColor: tank.shields > 0 ? tank.localColor : destroyedTankColor,
           }}
         >
           <span className="col-4">{tank.shields}%</span>
@@ -26,7 +26,7 @@ const Shields = (props) => {
             <ProgressBar
               animated
               now={tank.shields}
-              style={{ color: tank.color }}
+              style={{ color: tank.localColor }}
             />
           </div>
         </div>
