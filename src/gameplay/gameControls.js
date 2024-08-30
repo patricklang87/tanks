@@ -18,7 +18,6 @@ import { actions } from "../sprites/actions";
 import {
   getNewTankPosition,
   getTankY,
-  centerTank,
 } from "../utilities/tankPosition";
 import { getSelectedActionData } from "../utilities/data";
 
@@ -134,7 +133,7 @@ export const advancePlayerTurn = (props) => {
       tankX: position[0],
       distance: driveDistance,
     });
-    const centeredTankPosition = centerTank(newTankPosition);
+    const centeredTankPosition = newTankPosition;
     const updatedTank = {
       ...currentTank,
       targetPosition: centeredTankPosition,
