@@ -1,4 +1,5 @@
 import { useRef, useEffect, useCallback } from "react";
+import deepEqual from "deep-equal";
 import { tankDimensions } from "../sprites/tanks";
 import { calculateTurretEndpoints } from "../utilities/turretPosition";
 import { environmentConstants } from "../gameplay/constants";
@@ -62,14 +63,11 @@ const Canvas = (props) => {
     ctx.closePath();
 
     drawProjectile(ctx, frameCount);
+    const tanksDisplayPositions = updateTanksState(frameCount, tanks);
 
-    tanks.forEach((tank, index) => {
-      const { color, shields, turretAngle } = tank;
-      const [tankX, tankY] = getTankDisplayPosition(
-        frameCount,
-        tank,
-        index
-      );
+    tanksDisplayPositions.forEach((tankPosition, index) => {
+      const { color, shields, turretAngle } = tanks[index];
+      const [tankX, tankY] = tankPosition;
       const tankFillColor = shields > 0 ? color : destroyedTankColor;
       ctx.fillStyle = tankFillColor;
       ctx.fillRect(tankX, tankY, tankDimensions.width, tankDimensions.height);
@@ -174,7 +172,21 @@ const Canvas = (props) => {
     }
   };
 
-  const getTankDisplayPosition = (frameCount, tank, tankIndex) => {
+  const updateTanksState = (frameCount, tanks) => {
+    let tanksUpdatedState = [];
+    let tanksDisplayPositions = [];
+     tanks.forEach((tank, index) => {
+      const {tankDisplayPosition, updatedTank} = getTankWithNewPosition(frameCount, tank);
+      tanksDisplayPositions.push(tankDisplayPosition);
+      tanksUpdatedState.push(updatedTank);
+    })
+    if (!deepEqual(tanks, tanksUpdatedState)) {
+        setGameState({...gameState, tanks: tanksUpdatedState})
+    }
+    return tanksDisplayPositions;
+  }
+
+  const getTankWithNewPosition = (frameCount, tank) => {
     const tankDriveStep = 1;
     const tankFallStep = 2;
     const tankPosition = tank.position;
@@ -182,22 +194,22 @@ const Canvas = (props) => {
     const driveDirection = tankPosition[0] <= targetPosition[0] ? 1 : -1;
     const { tankDriveAnimationExecuting, tankFallAnimationExecuting } = tank;
 
-    if (!tankDriveAnimationExecuting && !tankFallAnimationExecuting) return tankPosition;
+    if (!tankDriveAnimationExecuting && !tankFallAnimationExecuting) return {tankDisplayPosition: tank.position, updatedTank: tank};
 
-    let displayTankPosition;
+    let tankDisplayPosition = [...tank.position];
 
     if (targetPosition[0] !== tankPosition[0]) {
       const newTankX =
         tankPosition[0] + frameCount * tankDriveStep * driveDirection;
-      displayTankPosition = centerTank([
+      tankDisplayPosition = centerTank([
         newTankX,
         getTankY({ topography, tankX: newTankX }),
       ]);
 
       if (
-        Math.abs(targetPosition[0] - displayTankPosition[0]) <= tankDriveStep
+        Math.abs(targetPosition[0] - tankDisplayPosition[0]) <= tankDriveStep
       ) {
-        displayTankPosition = targetPosition;
+        tankDisplayPosition = targetPosition;
       }
     }
 
@@ -206,28 +218,23 @@ const Canvas = (props) => {
       targetPosition[1] > tankPosition[1]
     ) {
       const newTankY = tankPosition[1] + environmentConstants.tankFallConstant * environmentConstants.gravity * frameCount**2;
-      displayTankPosition = [tankPosition[0], newTankY];
+      tankDisplayPosition = [tankPosition[0], newTankY];
 
       if (Math.abs(targetPosition[1] - newTankY) <= tankFallStep || newTankY > targetPosition[1]) {
-        displayTankPosition = targetPosition;
+       tankDisplayPosition = targetPosition;
       }
     }
 
-    if (displayTankPosition === targetPosition) {
-      let tanksUpdatedGameState = [...tanks];
-      console.log("tugs1", tankIndex, tanksUpdatedGameState)
-      const updatedTank = {
+    let updatedTank = {...tank};
+    if (tankDisplayPosition === targetPosition) {
+      updatedTank = {
         ...tank,
         position: targetPosition,
         tankFallAnimationExecuting: false,
+        tankDriveAnimationExecuting: false,
       };
-      tanksUpdatedGameState[tankIndex] = updatedTank;
-      console.log("tugs2", tankIndex, tanksUpdatedGameState)
-      setGameState({ ...gameState, tanks: tanksUpdatedGameState });
-    } else {
-      console.log("no match", tankIndex)
     }
-    return displayTankPosition;
+    return {tankDisplayPosition, updatedTank};
   };
 
   useEffect(() => {

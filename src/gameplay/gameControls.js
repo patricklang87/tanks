@@ -121,7 +121,6 @@ export const advancePlayerTurn = (props) => {
     tanksUpdatedGameState = tanksNewGameState;
     if (groundHit !== null) {
       newTopography = updateTopographyOnStrike({ gameState, point: groundHit });
-      console.log("calling maketanksfall")
       tanksUpdatedGameState = makeTanksFall({ gameState, newTopography });
     }
   }
