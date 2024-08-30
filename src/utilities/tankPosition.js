@@ -6,6 +6,11 @@ export const centerTank = (uncenteredPoint) => {
   return [tankX - tankWidth / 2, tankY - tankHeight];
 };
 
+export const centerTankVertically = (uncenteredPoint) => {
+  const { height: tankHeight } = tankDimensions;
+  return [uncenteredPoint[0], uncenteredPoint[1] - tankHeight];
+}
+
 export const generateTankPositions = (props) => {
   const { canvasWidth, topography, numberOfTanks = 2 } = props;
   const rangeWidth = canvasWidth / numberOfTanks;

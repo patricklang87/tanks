@@ -2,7 +2,6 @@ import { useId } from "react";
 import Form from "react-bootstrap/Form";
 import {
   setTurretAngle,
-  advancePlayerTurn,
   setShotPower,
 } from "../gameplay/gameControls";
 import { getSelectedActionData } from "../utilities/data";
