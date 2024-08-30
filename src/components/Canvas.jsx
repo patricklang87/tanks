@@ -1,10 +1,11 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useCallback } from "react";
+import deepEqual from "deep-equal";
 import { tankDimensions } from "../sprites/tanks";
 import { calculateTurretEndpoints } from "../utilities/turretPosition";
 import { environmentConstants } from "../gameplay/constants";
 import {
-  getNewTankPosition,
   centerTank,
+  getTankY,
 } from "../utilities/tankPosition";
 
 const Canvas = (props) => {
@@ -21,7 +22,7 @@ const Canvas = (props) => {
 
   const canvasRef = useRef(null);
 
-  const draw = (ctx, frameCount) => {
+  const draw = useCallback((ctx, frameCount) => {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
     var grd = ctx.createRadialGradient(75, 50, 5, 90, 60, 100);
@@ -50,19 +51,23 @@ const Canvas = (props) => {
     });
     ctx.lineTo(
       environmentConstants.canvasWidth,
-      environmentConstants.canvasHeight
+      environmentConstants.canvasHeight +
+        environmentConstants.landscapeStrokeWidth
     );
     ctx.lineTo(0, environmentConstants.canvasHeight);
     ctx.strokeStyle = "darkgreen";
-    ctx.lineWidth = 8;
+    ctx.lineWidth = environmentConstants.landscapeStrokeWidth;
     ctx.stroke();
     ctx.fillStyle = "lightgreen";
     ctx.fill();
     ctx.closePath();
 
-    tanks.forEach((tank, index) => {
-      const { currentColor, shields, turretAngle } = tank;
-      const [tankX, tankY] = getTankDisplayPosition(frameCount, tank, index);
+    drawProjectile(ctx, frameCount);
+    const tanksDisplayPositions = updateTanksState(frameCount, tanks);
+
+    tanksDisplayPositions.forEach((tankPosition, index) => {
+      const { currentColor, shields, turretAngle } = tanks[index];
+      const [tankX, tankY] = tankPosition;
       const tankFillColor = shields > 0 ? currentColor : destroyedTankColor;
       ctx.fillStyle = tankFillColor;
       ctx.fillRect(tankX, tankY, tankDimensions.width, tankDimensions.height);
@@ -140,11 +145,8 @@ const Canvas = (props) => {
     ctx.lineWidth = 3;
     ctx.stroke();
     ctx.closePath();
+  });
 
-    drawProjectile(ctx, frameCount);
-  };
-
-  // parabola
 
   const drawProjectile = (context, frameCount) => {
     if (!lastShotAnimationCompleted && lastShot.length > 0) {
@@ -159,47 +161,80 @@ const Canvas = (props) => {
       );
       context.fill();
     }
-    if (frameCount === lastShot.length - 1) {
+    if (frameCount === lastShot.length - 1 && !lastShotAnimationCompleted) {
       const updatedTopography = gameState.updatedTopography;
       setGameState({
         ...gameState,
         topography: updatedTopography,
+        tanks: gameState.tanksUpdatedGameState,
         lastShotAnimationCompleted: true,
       });
     }
   };
 
-  const getTankDisplayPosition = (frameCount, tank, tankIndex) => {
+  const updateTanksState = (frameCount, tanks) => {
+    let tanksUpdatedState = [];
+    let tanksDisplayPositions = [];
+     tanks.forEach((tank, index) => {
+      const {tankDisplayPosition, updatedTank} = getTankWithNewPosition(frameCount, tank);
+      tanksDisplayPositions.push(tankDisplayPosition);
+      tanksUpdatedState.push(updatedTank);
+    })
+    if (!deepEqual(tanks, tanksUpdatedState)) {
+        setGameState({...gameState, tanks: tanksUpdatedState})
+    }
+    return tanksDisplayPositions;
+  }
+
+  const getTankWithNewPosition = (frameCount, tank) => {
     const tankDriveStep = 1;
+    const tankFallStep = 2;
     const tankPosition = tank.position;
     const targetPosition = tank.targetPosition;
     const driveDirection = tankPosition[0] <= targetPosition[0] ? 1 : -1;
-    const tankDriveAnimationExecuting = tank.tankDriveAnimationExecuting;
-    if (!tankDriveAnimationExecuting) return tankPosition;
+    const { tankDriveAnimationExecuting, tankFallAnimationExecuting } = tank;
 
-    const newTankX =
-      tankPosition[0] + frameCount * tankDriveStep * driveDirection;
-    // possibility: tank is already centered for x, only needs to be centered for Y
-    let newTankPosition = 
-      getNewTankPosition({ topography, tankX: newTankX, distance: 0 })
+    if (!tankDriveAnimationExecuting && !tankFallAnimationExecuting) return {tankDisplayPosition: tank.position, updatedTank: tank};
 
-    // [newTankX, getTankY({topography, tankX: newTankX})];
+    let tankDisplayPosition = [...tank.position];
 
-    if (Math.abs(targetPosition[0] - newTankX) <= tankDriveStep) {
-      newTankPosition = targetPosition;
+    if (targetPosition[0] !== tankPosition[0]) {
+      const newTankX =
+        tankPosition[0] + frameCount * tankDriveStep * driveDirection;
+      tankDisplayPosition = centerTank([
+        newTankX,
+        getTankY({ topography, tankX: newTankX }),
+      ]);
+
+      if (
+        Math.abs(targetPosition[0] - tankDisplayPosition[0]) <= tankDriveStep
+      ) {
+        tankDisplayPosition = targetPosition;
+      }
     }
 
-    if (newTankPosition === targetPosition) {
-      let tanksUpdatedGameState = [...tanks];
-      const updatedTank = {
+    if (
+      targetPosition[0] === tankPosition[0] &&
+      targetPosition[1] > tankPosition[1]
+    ) {
+      const newTankY = tankPosition[1] + environmentConstants.tankFallConstant * environmentConstants.gravity * frameCount**2;
+      tankDisplayPosition = [tankPosition[0], newTankY];
+
+      if (Math.abs(targetPosition[1] - newTankY) <= tankFallStep || newTankY > targetPosition[1]) {
+       tankDisplayPosition = targetPosition;
+      }
+    }
+
+    let updatedTank = {...tank};
+    if (tankDisplayPosition === targetPosition) {
+      updatedTank = {
         ...tank,
         position: targetPosition,
+        tankFallAnimationExecuting: false,
         tankDriveAnimationExecuting: false,
       };
-      tanksUpdatedGameState[tankIndex] = updatedTank;
-      setGameState({ ...gameState, tanks: tanksUpdatedGameState });
     }
-    return newTankPosition;
+    return {tankDisplayPosition, updatedTank};
   };
 
   useEffect(() => {

@@ -29,6 +29,7 @@ export const initiateTank = (props) => {
     tankDriveAnimationExecuting: false,
     localColor: arrayToRgba(tankColors[index]),
     currentColor: arrayToRgba(tankColors[index]),
+    tankFallAnimationExecuting: false,
     fuel: 100,
     selectedAction: "standardShot",
     availableActions: [

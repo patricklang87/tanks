@@ -3,9 +3,11 @@ export const environmentConstants = {
   canvasWidth: 1200,
   timeout: 40,
   frameRate: 0.1,
+  tankFallConstant: 0.05,
   gravity: 5,
   destroyedTankColor: "#997570",
   struckTankColor: [255, 0, 0, 1],
+  landscapeStrokeWidth: 8,
 };
 
 export const textConstants = {
@@ -24,4 +26,11 @@ export const textConstants = {
     "Now we see WHO'S the BEST!",
     "This is the best I can do :("
   ],
+  fallingStatements: [
+    "AHHHHHHHHHH!",
+    "Keeeer-plunk!",
+    "All downhill from here!",
+    "I don't, like, even care or whatever.",
+    "Woahwoahwoahwoah!"
+  ]
 };
