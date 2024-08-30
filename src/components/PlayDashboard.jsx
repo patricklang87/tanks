@@ -52,8 +52,7 @@ export const PlayDashboard = (props) => {
   const currentTank = tanks[currentPlayer - 1];
 
   const selectedAction = getSelectedActionData(currentTank.selectedAction, currentTank.availableActions)
-  console.log("actions", actions);
-  console.log("selectedAction pulled out", selectedAction);
+
   const availableActions = currentTank.availableActions;
   const availableActionsFiltered = availableActions.filter(
     (action) => action.name !== selectedAction.name

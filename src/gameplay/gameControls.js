@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { generateTankPositions } from "../utilities/tankPosition";
-import { initiateTank } from "../sprites/tanks";
+import { initiateTank, tankDimensions } from "../sprites/tanks";
 import {
   createInitialTopography,
   updateTopographyOnStrike,
@@ -18,7 +18,6 @@ import { actions } from "../sprites/actions";
 import {
   getNewTankPosition,
   getTankY,
-  centerTank,
 } from "../utilities/tankPosition";
 import { getSelectedActionData } from "../utilities/data";
 
@@ -123,20 +122,7 @@ export const advancePlayerTurn = (props) => {
     tanksUpdatedGameState = tanksNewGameState;
     if (groundHit !== null) {
       newTopography = updateTopographyOnStrike({ gameState, point: groundHit });
-      tanksUpdatedGameState = tanksUpdatedGameState.map((tank, index) => {
-        console.log("made it in");
-        const tankPosition = tank.position;
-        const newTankPosition = getNewTankPosition({
-          tankX: tank.position[0],
-          topography: newTopography,
-          distance: 0,
-        });
-        if (tankPosition[1] !== newTankPosition[1]) {
-          console.log(index, "not a match", tankPosition, newTankPosition);
-          return { ...tank, position: newTankPosition };
-        }
-        return tank;
-      });
+      tanksUpdatedGameState = makeTanksFall({ gameState, newTopography });
     }
   }
 
@@ -147,7 +133,7 @@ export const advancePlayerTurn = (props) => {
       tankX: position[0],
       distance: driveDistance,
     });
-    const centeredTankPosition = centerTank(newTankPosition);
+    const centeredTankPosition = newTankPosition;
     const updatedTank = {
       ...currentTank,
       targetPosition: centeredTankPosition,
@@ -166,7 +152,9 @@ export const advancePlayerTurn = (props) => {
     currentPlayer: nextPlayer,
     lastShot: updatedLastShot,
     lastShotAnimationCompleted: false,
-    tanks: tanksUpdatedGameState,
+    tanks: 
+      selectedAction.type === "DRIVE" ? tanksUpdatedGameState : gameState.tanks,
+    tanksUpdatedGameState,
     updatedTopography: newTopography,
   });
 };
@@ -314,4 +302,22 @@ export const launchProjectile = (props) => {
   }
 
   return { newLastShot: newTrajectory, tanksNewGameState, groundHit };
+};
+
+export const makeTanksFall = (props) => {
+  const { gameState, newTopography } = props;
+  const { tanks } = gameState;
+  const updatedTanks = tanks.map((tank) => {
+    const newTankY = getTankY({ topography: newTopography, tankX: tank.position[0] });
+    const newTankPosition = [tank.position[0], newTankY  - tankDimensions.height]
+    if (tank.position[1] < newTankPosition[1]) {
+      return {
+        ...tank,
+        targetPosition: newTankPosition,
+        tankFallAnimationExecuting: true,
+      };
+    }
+    return tank;
+  });
+  return updatedTanks;
 };

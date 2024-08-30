@@ -43,6 +43,6 @@ export const getTankY = (props) => {
 export const getNewTankPosition = (props) => {
   const { topography, tankX, distance } = props;
   const newTankX = Number(tankX) + Number(distance);
-  const newTankY = getTankY({topography, tankX: newTankX});
-  return [newTankX, newTankY];
-}
+  const newTankY = getTankY({ topography, tankX: newTankX });
+  return centerTank([newTankX, newTankY]);
+};

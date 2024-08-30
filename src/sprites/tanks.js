@@ -19,6 +19,7 @@ export const initiateTank = (props) => {
     position: tankPosition,
     targetPosition: tankPosition,
     tankDriveAnimationExecuting: false,
+    tankFallAnimationExecuting: false,
     color: tankColors[index],
     fuel: 100,
     selectedAction: "standardShot",
