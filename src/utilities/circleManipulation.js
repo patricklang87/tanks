@@ -12,5 +12,3 @@ export const degreesToRadians = (degrees) => {
     const pi = Math.PI;
     return degrees * (pi / 180);
   };
-
-  //turretStartingX + Math.cos(angleInRad) * turretLength;

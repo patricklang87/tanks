@@ -6,7 +6,7 @@ export const environmentConstants = {
   tankFallConstant: 0.05,
   gravity: 5,
   destroyedTankColor: "#997570",
-  struckTankColor: [255, 0, 0, 1],
+  struckTankColor: [241, 90, 34, 1],
   landscapeStrokeWidth: 8,
 };
 

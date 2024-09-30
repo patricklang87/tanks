@@ -113,12 +113,12 @@ export const advancePlayerTurn = (props) => {
     currentTank.availableActions
   );
   let updatedLastShot = [];
-  let tanksUpdatedGameState = [...gameState.tanks];
+  let tanksUpdatedGameState = gameState.tanks.map((tank) => {return {...tank, currentColor: tank.localColor}});
   let newTopography = topography;
 
   if (selectedAction.type === "PROJECTILE") {
     const { newLastShot, tanksNewGameState, groundHit } =
-      launchProjectile(props);
+      launchProjectile({gameState, tanksUpdatedGameState});
     updatedLastShot = newLastShot;
     tanksUpdatedGameState = tanksNewGameState;
     if (groundHit !== null) {
@@ -184,9 +184,9 @@ const getLaunchAngle = (props) => {
 };
 
 export const launchProjectile = (props) => {
-  const { gameState } = props;
-  const { topography, tanks, currentPlayer } = gameState;
-  const tank = tanks[currentPlayer - 1];
+  const { gameState, tanksUpdatedGameState } = props;
+  const { topography, currentPlayer } = gameState;
+  const tank = tanksUpdatedGameState[currentPlayer - 1];
   const { position, shotPower, turretAngle, selectedAction } = tank;
 
   const launchAngle = getLaunchAngle({ turretAngle });
@@ -231,10 +231,10 @@ export const launchProjectile = (props) => {
     gameState,
   });
 
-  const tanksNewGameState = tanks.map((tank, index) => {
+  const tanksNewGameState = tanksUpdatedGameState.map((tank, index) => {
     let tankUpdated = { ...tank };
     if (tanksHit.includes(index)) {
-      const strikeType = tanks[currentPlayer - 1].selectedAction;
+      const strikeType = tanksUpdatedGameState[currentPlayer - 1].selectedAction;
       const damage = actions[strikeType].damage;
       tankUpdated = {
         ...tankUpdated,
